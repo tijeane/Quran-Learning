@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quranic Words Master</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00f260, #0575e6);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .game-modes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .mode-card {
+            background: rgba(255,255,255,0.15);
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 2px solid transparent;
+        }
+
+        .mode-card:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-5px);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        .mode-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .mode-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .mode-description {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .game-screen {
+            display: none;
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .game-screen.active {
+            display: block;
+        }
+
+        .question-card {
+            background: white;
+            color: #333;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .arabic-word {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-family: 'Times New Roman', serif;
+        }
+
+        .transliteration {
+            font-size: 1.5rem;
+            color: #7f8c8d;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .word-frequency {
+            font-size: 1rem;
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .option-btn {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+        }
+
+        .option-btn:hover {
+            background: white;
+            transform: scale(1.05);
+        }
+
+        .option-btn.correct {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .option-btn.incorrect {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .streak-counter {
+            background: #f39c12;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .level-badge {
+            background: #9b59b6;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .celebration.show {
+            display: block;
+            animation: celebration 0.5s ease;
+        }
+
+        @keyframes celebration {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .word-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .word-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .word-item:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.05);
+        }
+
+        .word-item.mastered {
+            background: rgba(46, 204, 113, 0.3);
+            border: 2px solid #2ecc71;
+        }
+
+        .word-item.learning {
+            background: rgba(241, 196, 15, 0.3);
+            border: 2px solid #f1c40f;
+        }
+
+        .play-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        .play-btn:hover {
+            background: #c0392b;
+            transform: scale(1.1);
+        }
+
+        .adaptive-info {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .learning-recommendation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .recommendation-text {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .session-progress {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .progress-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: conic-gradient(#2ecc71 0deg, rgba(255,255,255,0.2) 0deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .adaptive-badge {
+            background: linear-gradient(45deg, #3498db, #9b59b6);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .performance-indicator {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .indicator-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #95a5a6;
+        }
+
+        .indicator-dot.excellent { background: #2ecc71; }
+        .indicator-dot.good { background: #f1c40f; }
+        .indicator-dot.needs-work { background: #e74c3c; }
+@media screen and (max-width: 768px) {
+    .header h1 {
+        font-size: 2rem;
+    }
+    .stats-bar {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .arabic-word {
+        font-size: 2.5rem;
+    }
+    .game-modes {
+        grid-template-columns: 1fr;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🕌 Quranic Words Master</h1>
+            <p>Master the 100 most frequent words in the Holy Quran</p>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat">
+                <div class="stat-number" id="totalScore">0</div>
+                <div class="stat-label">Points</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="wordsLearned">0</div>
+                <div class="stat-label">Words Learned</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="currentStreak">0</div>
+                <div class="stat-label">Current Streak</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="currentLevel">1</div>
+                <div class="stat-label">Level</div>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+
+        <div id="mainMenu">
+            <div class="adaptive-info">
+                <div class="learning-recommendation">
+                    <div>
+                        <div class="recommendation-text" id="todayRecommendation">Today's Goal: Learn 5 new words</div>
+                        <div class="adaptive-badge" id="learningPhase">Beginner Phase</div>
+                    </div>
+                    <div class="session-progress">
+                        <div class="progress-circle" id="sessionProgress">0/5</div>
+                        <div class="performance-indicator" id="performanceIndicator">
+                            <div class="indicator-dot"></div>
+                            <div class="indicator-dot"></div>
+                            <div class="indicator-dot"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="sessionProgressBar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="game-modes">
+                <div class="mode-card" onclick="startAdaptiveSession()">
+                    <div class="mode-icon">🎯</div>
+                    <div class="mode-title">Smart Learning</div>
+                    <div class="mode-description">AI-powered session based on your progress</div>
+                </div>
+
+                <div class="mode-card" onclick="startGame('flashcard')">
+                    <div class="mode-icon">📚</div>
+                    <div class="mode-title">Flashcard Review</div>
+                    <div class="mode-description">Learn new words with spaced repetition</div>
+                </div>
+
+                <div class="mode-card" onclick="startGame('quiz')">
+                    <div class="mode-icon">🔄</div>
+                    <div class="mode-title">Quick Quiz</div>
+                    <div class="mode-description">Test your knowledge with multiple choice</div>
+                </div>
+
+                <div class="mode-card" onclick="showProgress()">
+                    <div class="mode-icon">📊</div>
+                    <div class="mode-title">Progress Tracker</div>
+                    <div class="mode-description">View your learning analytics</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="gameScreen" class="game-screen">
+            <div class="game-controls">
+                <button class="btn btn-secondary" onclick="backToMenu()">← Back</button>
+                <div class="streak-counter">🔥 Streak: <span id="gameStreak">0</span></div>
+                <div class="level-badge">Level <span id="gameLevel">1</span></div>
+            </div>
+
+            <div class="question-card" id="questionCard">
+                <div class="arabic-word" id="arabicWord">الله</div>
+                <button class="play-btn" id="playBtn" onclick="playAudio()" title="Play pronunciation">🔊</button>
+                <div class="transliteration" id="transliteration">Allah</div>
+                <div class="word-frequency" id="wordFrequency">Used 2,699 times in Quran</div>
+            </div>
+
+            <div class="options" id="optionsContainer">
+                <!-- Options will be dynamically generated -->
+            </div>
+
+            <div class="game-controls">
+                <button class="btn btn-primary" onclick="nextQuestion()">Next →</button>
+                <button class="btn btn-secondary" onclick="markDifficult()">Mark Difficult</button>
+            </div>
+        </div>
+
+        <div id="progressScreen" class="game-screen">
+            <div class="game-controls">
+                <button class="btn btn-secondary" onclick="backToMenu()">← Back</button>
+            </div>
+            <h2 style="text-align: center; margin-bottom: 30px;">Your Learning Progress</h2>
+            <div class="word-grid" id="wordGrid">
+                <!-- Progress words will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <div class="celebration" id="celebration">
+        <h2>🎉 Amazing!</h2>
+        <p id="celebrationText">Great job!</p>
+    </div>
+
+    <script>
+        // Top 100 Quranic words data (complete list)
+        const quranicWords = [
+            {arabic: "من", transliteration: "min", meaning: "from, of, among", frequency: 3226, audio: "audio/min.mp3"},
+            {arabic: "الله", transliteration: "Allah", meaning: "God/Allah", frequency: 2699, audio: "audio/allah.mp3"},
+            {arabic: "في", transliteration: "fi", meaning: "in, on, at", frequency: 1701},
+            {arabic: "إن", transliteration: "inna", meaning: "indeed, verily", frequency: 1682},
+            {arabic: "على", transliteration: "ala", meaning: "on, upon, over", frequency: 1445},
+            {arabic: "الذي", transliteration: "alladhi", meaning: "who, which, that", frequency: 1442},
+            {arabic: "لا", transliteration: "la", meaning: "no, not", frequency: 1364},
+            {arabic: "ما", transliteration: "ma", meaning: "what, that which", frequency: 1266},
+            {arabic: "رب", transliteration: "rabb", meaning: "Lord, sustainer", frequency: 975},
+            {arabic: "إلى", transliteration: "ila", meaning: "to, towards", frequency: 742},
+            {arabic: "من", transliteration: "man", meaning: "who, whoever", frequency: 606},
+            {arabic: "إن", transliteration: "in", meaning: "if", frequency: 578},
+            {arabic: "أن", transliteration: "an", meaning: "that, to", frequency: 578},
+            {arabic: "إلا", transliteration: "illa", meaning: "except, but", frequency: 558},
+            {arabic: "ذلك", transliteration: "dhalika", meaning: "that", frequency: 520},
+            {arabic: "عن", transliteration: "an", meaning: "about, from", frequency: 465},
+            {arabic: "أرض", transliteration: "ard", meaning: "earth, land", frequency: 461},
+            {arabic: "قد", transliteration: "qad", meaning: "indeed, already", frequency: 406},
+            {arabic: "إذا", transliteration: "idha", meaning: "when, if", frequency: 405},
+            {arabic: "قوم", transliteration: "qawm", meaning: "people, nation", frequency: 383},
+            {arabic: "آية", transliteration: "ayah", meaning: "sign, verse", frequency: 382},
+            {arabic: "أن", transliteration: "anna", meaning: "that", frequency: 362},
+            {arabic: "كل", transliteration: "kull", meaning: "all, every", frequency: 358},
+            {arabic: "لم", transliteration: "lam", meaning: "did not", frequency: 353},
+            {arabic: "ثم", transliteration: "thumma", meaning: "then", frequency: 338},
+            {arabic: "رسول", transliteration: "rasul", meaning: "messenger", frequency: 332},
+            {arabic: "يوم", transliteration: "yawm", meaning: "day", frequency: 325},
+            {arabic: "عذاب", transliteration: "adhab", meaning: "punishment", frequency: 322},
+            {arabic: "هذا", transliteration: "hadha", meaning: "this", frequency: 317},
+            {arabic: "سماء", transliteration: "sama", meaning: "heaven, sky", frequency: 310},
+            {arabic: "نفس", transliteration: "nafs", meaning: "soul, self", frequency: 295},
+            {arabic: "شيء", transliteration: "shay", meaning: "thing", frequency: 283},
+            {arabic: "أو", transliteration: "aw", meaning: "or", frequency: 280},
+            {arabic: "كتاب", transliteration: "kitab", meaning: "book", frequency: 260},
+            {arabic: "بين", transliteration: "bayna", meaning: "between", frequency: 243},
+            {arabic: "حق", transliteration: "haqq", meaning: "truth, right", frequency: 242},
+            {arabic: "ناس", transliteration: "nas", meaning: "people", frequency: 241},
+            {arabic: "إذ", transliteration: "idh", meaning: "when", frequency: 239},
+            {arabic: "أولئك", transliteration: "ulaika", meaning: "those", frequency: 204},
+            {arabic: "قبل", transliteration: "qabl", meaning: "before", frequency: 197},
+            {arabic: "مؤمن", transliteration: "mumin", meaning: "believer", frequency: 195},
+            {arabic: "لو", transliteration: "law", meaning: "if", frequency: 184},
+            {arabic: "سبيل", transliteration: "sabil", meaning: "way, path", frequency: 176},
+            {arabic: "أمر", transliteration: "amr", meaning: "matter, command", frequency: 166},
+            {arabic: "عند", transliteration: "ind", meaning: "with, at", frequency: 160},
+            {arabic: "مع", transliteration: "maa", meaning: "with", frequency: 159},
+            {arabic: "بعض", transliteration: "bad", meaning: "some", frequency: 157},
+            {arabic: "بعد", transliteration: "baad", meaning: "after", frequency: 154},
+            {arabic: "مال", transliteration: "mal", meaning: "wealth, money", frequency: 145},
+            {arabic: "خير", transliteration: "khayr", meaning: "good, better", frequency: 144},
+            {arabic: "عمل", transliteration: "amal", meaning: "work, deed", frequency: 138},
+            {arabic: "آمن", transliteration: "aman", meaning: "believe, faith", frequency: 137},
+            {arabic: "نار", transliteration: "nar", meaning: "fire", frequency: 135},
+            {arabic: "صالح", transliteration: "salih", meaning: "righteous", frequency: 133},
+            {arabic: "علم", transliteration: "ilm", meaning: "knowledge", frequency: 132},
+            {arabic: "كفر", transliteration: "kafar", meaning: "disbelieve", frequency: 131},
+            {arabic: "بيت", transliteration: "bayt", meaning: "house", frequency: 130},
+            {arabic: "جنة", transliteration: "jannah", meaning: "paradise, garden", frequency: 129},
+            {arabic: "وجه", transliteration: "wajh", meaning: "face", frequency: 127},
+            {arabic: "دون", transliteration: "dun", meaning: "without, below", frequency: 126},
+            {arabic: "أهل", transliteration: "ahl", meaning: "people, family", frequency: 124},
+            {arabic: "يد", transliteration: "yad", meaning: "hand", frequency: 120},
+            {arabic: "جعل", transliteration: "jaal", meaning: "make, put", frequency: 118},
+            {arabic: "قال", transliteration: "qal", meaning: "said, say", frequency: 117},
+            {arabic: "هدى", transliteration: "huda", meaning: "guidance", frequency: 116},
+            {arabic: "كان", transliteration: "kan", meaning: "was, is", frequency: 115},
+            {arabic: "نزل", transliteration: "nazal", meaning: "sent down", frequency: 114},
+            {arabic: "عظيم", transliteration: "azim", meaning: "great, mighty", frequency: 113},
+            {arabic: "جاء", transliteration: "jaa", meaning: "came", frequency: 112},
+            {arabic: "رحمة", transliteration: "rahma", meaning: "mercy", frequency: 111},
+            {arabic: "آخر", transliteration: "akhar", meaning: "other, last", frequency: 110},
+            {arabic: "كبير", transliteration: "kabir", meaning: "big, great", frequency: 109},
+            {arabic: "حكيم", transliteration: "hakim", meaning: "wise", frequency: 108},
+            {arabic: "ذهب", transliteration: "dhahab", meaning: "go, gold", frequency: 107},
+            {arabic: "عزيز", transliteration: "aziz", meaning: "mighty, dear", frequency: 106},
+            {arabic: "أخذ", transliteration: "akhadh", meaning: "take", frequency: 105},
+            {arabic: "موسى", transliteration: "Musa", meaning: "Moses", frequency: 104},
+            {arabic: "محمد", transliteration: "Muhammad", meaning: "Muhammad", frequency: 103},
+            {arabic: "مريم", transliteration: "Maryam", meaning: "Mary", frequency: 102},
+            {arabic: "عيسى", transliteration: "Isa", meaning: "Jesus", frequency: 101},
+            {arabic: "إبراهيم", transliteration: "Ibrahim", meaning: "Abraham", frequency: 100},
+            {arabic: "نوح", transliteration: "Nuh", meaning: "Noah", frequency: 99},
+            {arabic: "لوط", transliteration: "Lut", meaning: "Lot", frequency: 98},
+            {arabic: "صلاة", transliteration: "salah", meaning: "prayer", frequency: 97},
+            {arabic: "زكاة", transliteration: "zakah", meaning: "charity", frequency: 96},
+            {arabic: "صوم", transliteration: "sawm", meaning: "fasting", frequency: 95},
+            {arabic: "حج", transliteration: "hajj", meaning: "pilgrimage", frequency: 94},
+            {arabic: "قرآن", transliteration: "quran", meaning: "Quran", frequency: 93},
+            {arabic: "توراة", transliteration: "tawrah", meaning: "Torah", frequency: 92},
+            {arabic: "إنجيل", transliteration: "injil", meaning: "Gospel", frequency: 91},
+            {arabic: "ملك", transliteration: "malik", meaning: "king, angel", frequency: 90},
+            {arabic: "شيطان", transliteration: "shaytan", meaning: "Satan", frequency: 89},
+            {arabic: "جبريل", transliteration: "Jibril", meaning: "Gabriel", frequency: 88},
+            {arabic: "روح", transliteration: "ruh", meaning: "spirit, soul", frequency: 87},
+            {arabic: "قلب", transliteration: "qalb", meaning: "heart", frequency: 86},
+            {arabic: "عين", transliteration: "ayn", meaning: "eye", frequency: 85},
+            {arabic: "سمع", transliteration: "sama", meaning: "hear", frequency: 84},
+            {arabic: "بصر", transliteration: "basar", meaning: "sight", frequency: 83},
+            {arabic: "حياة", transliteration: "hayah", meaning: "life", frequency: 82},
+            {arabic: "موت", transliteration: "mawt", meaning: "death", frequency: 81},
+            {arabic: "دنيا", transliteration: "dunya", meaning: "world", frequency: 80},
+            {arabic: "آخرة", transliteration: "akhirah", meaning: "hereafter", frequency: 79},
+            {arabic: "جهنم", transliteration: "jahannam", meaning: "hell", frequency: 78},
+            {arabic: "رجل", transliteration: "rajul", meaning: "man", frequency: 77},
+            {arabic: "امرأة", transliteration: "imraah", meaning: "woman", frequency: 76},
+            {arabic: "ولد", transliteration: "walad", meaning: "child", frequency: 75},
+            {arabic: "أب", transliteration: "ab", meaning: "father", frequency: 74},
+            {arabic: "أم", transliteration: "umm", meaning: "mother", frequency: 73}
+        ];
+
+        let gameState = {
+            currentMode: '',
+            currentWordIndex: 0,
+            score: 0,
+            streak: 0,
+            level: 1,
+            wordsLearned: new Set(),
+            difficultWords: new Set(),
+            correctAnswers: 0,
+            totalQuestions: 0,
+            // Adaptive learning data
+            dailyStats: {
+                date: new Date().toDateString(),
+                newWordsToday: 0,
+                reviewsToday: 0,
+                correctToday: 0,
+                totalToday: 0
+            },
+            wordProgress: {}, // Track individual word performance
+            learningPhase: 'beginner', // beginner, intermediate, mastery
+            recommendedNewWords: 5,
+            sessionTarget: 5,
+            completedToday: 0
+        };
+
+        // Adaptive Learning Algorithm
+        function calculateOptimalNewWords() {
+            const totalAttempts = gameState.dailyStats.totalToday;
+            const correctAnswers = gameState.dailyStats.correctToday;
+            const retentionRate = totalAttempts > 0 ? correctAnswers / totalAttempts : 1;
+            
+            let baseWords = 5; // Default for beginners
+            
+            // Adjust based on learning phase
+            if (gameState.learningPhase === 'intermediate') baseWords = 6;
+            if (gameState.learningPhase === 'mastery') baseWords = 8;
+            
+            // Adjust based on performance
+            if (retentionRate > 0.85) return Math.min(baseWords + 2, 10);
+            if (retentionRate > 0.70) return baseWords;
+            if (retentionRate > 0.50) return Math.max(baseWords - 2, 3);
+            return 2; // Minimum for struggling learners
+        }
+
+        function updateLearningPhase() {
+            const learnedCount = gameState.wordsLearned.size;
+            
+            if (learnedCount < 30) {
+                gameState.learningPhase = 'beginner';
+            } else if (learnedCount < 70) {
+                gameState.learningPhase = 'intermediate';
+            } else {
+                gameState.learningPhase = 'mastery';
+            }
+        }
+
+        function getWordsForReview() {
+            const reviewWords = [];
+            const today = new Date();
+            
+            // Spaced repetition algorithm
+            Object.keys(gameState.wordProgress).forEach(wordIndex => {
+                const progress = gameState.wordProgress[wordIndex];
+                const daysSinceLastReview = Math.floor((today - new Date(progress.lastReviewed)) / (1000 * 60 * 60 * 24));
+                
+                // Review schedule based on performance
+                let reviewInterval = 1;
+                if (progress.correctCount >= 3) reviewInterval = 3;
+                if (progress.correctCount >= 6) reviewInterval = 7;
+                if (progress.correctCount >= 10) reviewInterval = 14;
+                
+                if (daysSinceLastReview >= reviewInterval) {
+                    reviewWords.push(parseInt(wordIndex));
+                }
+            });
+            
+            return reviewWords;
+        }
+
+        function getNewWordsToLearn() {
+            const newWords = [];
+            const maxNewWords = gameState.recommendedNewWords;
+            
+            for (let i = 0; i < quranicWords.length && newWords.length < maxNewWords; i++) {
+                if (!gameState.wordsLearned.has(i) && !gameState.wordProgress[i]) {
+                    newWords.push(i);
+                }
+            }
+            
+            return newWords;
+        }
+
+        function startAdaptiveSession() {
+            gameState.currentMode = 'adaptive';
+            updateDailyStats();
+            
+            // Calculate what user should study today
+            const reviewWords = getWordsForReview();
+            const newWords = getNewWordsToLearn();
+            
+            // Create adaptive session plan
+            gameState.sessionPlan = [];
+            
+            // Add reviews first (70% of session)
+            const reviewCount = Math.min(reviewWords.length, Math.ceil(gameState.recommendedNewWords * 0.7));
+            gameState.sessionPlan.push(...reviewWords.slice(0, reviewCount).map(i => ({index: i, type: 'review'})));
+            
+            // Add new words (30% of session)
+            const newWordCount = Math.min(newWords.length, gameState.recommendedNewWords - reviewCount);
+            gameState.sessionPlan.push(...newWords.slice(0, newWordCount).map(i => ({index: i, type: 'new'})));
+            
+            // Shuffle for variety
+            gameState.sessionPlan = shuffleArray(gameState.sessionPlan);
+            gameState.sessionTarget = gameState.sessionPlan.length;
+            gameState.completedToday = 0;
+            
+            if (gameState.sessionPlan.length === 0) {
+                showCelebration("Great job! 🎉", "You're all caught up for today!");
+                return;
+            }
+            
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('gameScreen').classList.add('active');
+            startAdaptiveQuestion();
+        }
+
+        function startAdaptiveQuestion() {
+            if (gameState.completedToday >= gameState.sessionPlan.length) {
+                showSessionComplete();
+                return;
+            }
+            
+            const currentItem = gameState.sessionPlan[gameState.completedToday];
+            gameState.currentWordIndex = currentItem.index;
+            
+            // Show different UI based on whether it's new or review
+            if (currentItem.type === 'new') {
+                showNewWordIntroduction();
+            } else {
+                showQuizQuestion();
+            }
+            
+            updateSessionProgress();
+        }
+
+        function showNewWordIntroduction() {
+            const word = quranicWords[gameState.currentWordIndex];
+            
+            document.getElementById('arabicWord').textContent = word.arabic;
+            document.getElementById('transliteration').textContent = word.transliteration;
+            document.getElementById('wordFrequency').textContent = `NEW WORD: ${word.meaning} • Used ${word.frequency} times`;
+            
+            // Hide options for introduction
+            document.getElementById('optionsContainer').style.display = 'none';
+            
+            // Initialize word progress
+            if (!gameState.wordProgress[gameState.currentWordIndex]) {
+                gameState.wordProgress[gameState.currentWordIndex] = {
+                    correctCount: 0,
+                    totalAttempts: 0,
+                    lastReviewed: new Date().toISOString(),
+                    introduced: new Date().toISOString()
+                };
+            }
+            
+            autoPlayAudio();
+        }
+
+        function updateWordProgress(isCorrect) {
+            const wordIndex = gameState.currentWordIndex;
+            
+            if (!gameState.wordProgress[wordIndex]) {
+                gameState.wordProgress[wordIndex] = {
+                    correctCount: 0,
+                    totalAttempts: 0,
+                    lastReviewed: new Date().toISOString(),
+                    introduced: new Date().toISOString()
+                };
+            }
+            
+            const progress = gameState.wordProgress[wordIndex];
+            progress.totalAttempts++;
+            progress.lastReviewed = new Date().toISOString();
+            
+            if (isCorrect) {
+                progress.correctCount++;
+                // Consider word "learned" after 3 correct answers
+                if (progress.correctCount >= 3) {
+                    gameState.wordsLearned.add(wordIndex);
+                }
+            }
+        }
+
+        function updateDailyStats() {
+            const today = new Date().toDateString();
+            
+            if (gameState.dailyStats.date !== today) {
+                // New day - reset stats
+                gameState.dailyStats = {
+                    date: today,
+                    newWordsToday: 0,
+                    reviewsToday: 0,
+                    correctToday: 0,
+                    totalToday: 0
+                };
+            }
+            
+            // Update recommendations based on performance
+            gameState.recommendedNewWords = calculateOptimalNewWords();
+            updateLearningPhase();
+        }
+
+        function updateSessionProgress() {
+            const progress = (gameState.completedToday / gameState.sessionTarget) * 100;
+            document.getElementById('sessionProgressBar').style.width = progress + '%';
+            document.getElementById('sessionProgress').textContent = `${gameState.completedToday}/${gameState.sessionTarget}`;
+            
+            // Update progress circle
+            const circle = document.getElementById('sessionProgress');
+            const percentage = (gameState.completedToday / gameState.sessionTarget) * 360;
+            circle.style.background = `conic-gradient(#2ecc71 ${percentage}deg, rgba(255,255,255,0.2) ${percentage}deg)`;
+        }
+
+        function getWordsForReview() {
+            const reviewWords = [];
+            const today = new Date();
+            
+            // Spaced repetition algorithm
+            Object.keys(gameState.wordProgress).forEach(wordIndex => {
+                const progress = gameState.wordProgress[wordIndex];
+                const daysSinceLastReview = Math.floor((today - new Date(progress.lastReviewed)) / (1000 * 60 * 60 * 24));
+                
+                // Review schedule based on performance
+                let reviewInterval = 1;
+                if (progress.correctCount >= 3) reviewInterval = 3;
+                if (progress.correctCount >= 6) reviewInterval = 7;
+                if (progress.correctCount >= 10) reviewInterval = 14;
+                
+                if (daysSinceLastReview >= reviewInterval) {
+                    reviewWords.push(parseInt(wordIndex));
+                }
+            });
+            
+            return reviewWords;
+        }
+
+        function getNewWordsToLearn() {
+            const newWords = [];
+            const maxNewWords = gameState.recommendedNewWords;
+            
+            for (let i = 0; i < quranicWords.length && newWords.length < maxNewWords; i++) {
+                if (!gameState.wordsLearned.has(i) && !gameState.wordProgress[i]) {
+                    newWords.push(i);
+                }
+            }
+            
+            return newWords;
+        }
+
+        function updateWordProgress(isCorrect) {
+            const wordIndex = gameState.currentWordIndex;
+            
+            if (!gameState.wordProgress[wordIndex]) {
+                gameState.wordProgress[wordIndex] = {
+                    correctCount: 0,
+                    totalAttempts: 0,
+                    lastReviewed: new Date().toISOString(),
+                    introduced: new Date().toISOString()
+                };
+            }
+            
+            const progress = gameState.wordProgress[wordIndex];
+            progress.totalAttempts++;
+            progress.lastReviewed = new Date().toISOString();
+            
+            if (isCorrect) {
+                progress.correctCount++;
+                // Consider word "learned" after 3 correct answers
+                if (progress.correctCount >= 3) {
+                    gameState.wordsLearned.add(wordIndex);
+                }
+            }
+        }
+
+        function updateSessionProgress() {
+            const progress = (gameState.completedToday / gameState.sessionTarget) * 100;
+            document.getElementById('sessionProgressBar').style.width = progress + '%';
+            document.getElementById('sessionProgress').textContent = `${gameState.completedToday}/${gameState.sessionTarget}`;
+            
+            // Update progress circle
+            const circle = document.getElementById('sessionProgress');
+            const percentage = (gameState.completedToday / gameState.sessionTarget) * 360;
+            circle.style.background = `conic-gradient(#2ecc71 ${percentage}deg, rgba(255,255,255,0.2) ${percentage}deg)`;
+        }
+
+        function updateAdaptiveUI() {
+            updateDailyStats();
+            
+            const phaseNames = {
+                'beginner': 'Beginner Phase',
+                'intermediate': 'Intermediate Phase', 
+                'mastery': 'Mastery Phase'
+            };
+            
+            document.getElementById('learningPhase').textContent = phaseNames[gameState.learningPhase];
+            document.getElementById('todayRecommendation').textContent = 
+                `Today's Goal: Learn ${gameState.recommendedNewWords} words`;
+            
+            // Update performance indicators
+            const retentionRate = gameState.dailyStats.totalToday > 0 ? 
+                gameState.dailyStats.correctToday / gameState.dailyStats.totalToday : 0;
+            
+            const indicators = document.querySelectorAll('.indicator-dot');
+            indicators.forEach((dot, index) => {
+                dot.className = 'indicator-dot';
+                if (retentionRate > 0.8 && index < 3) dot.classList.add('excellent');
+                else if (retentionRate > 0.6 && index < 2) dot.classList.add('good');
+                else if (retentionRate > 0.4 && index < 1) dot.classList.add('needs-work');
+            });
+        }
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // Missing startAdaptiveSession function
+        function startAdaptiveSession() {
+            gameState.currentMode = 'adaptive';
+            updateDailyStats();
+            
+            // Calculate what user should study today
+            const reviewWords = getWordsForReview();
+            const newWords = getNewWordsToLearn();
+            
+            // Create adaptive session plan
+            gameState.sessionPlan = [];
+            
+            // Add reviews first (70% of session)
+            const reviewCount = Math.min(reviewWords.length, Math.ceil(gameState.recommendedNewWords * 0.7));
+            gameState.sessionPlan.push(...reviewWords.slice(0, reviewCount).map(i => ({index: i, type: 'review'})));
+            
+            // Add new words (30% of session)
+            const newWordCount = Math.min(newWords.length, gameState.recommendedNewWords - reviewCount);
+            gameState.sessionPlan.push(...newWords.slice(0, newWordCount).map(i => ({index: i, type: 'new'})));
+            
+            // Shuffle for variety
+            gameState.sessionPlan = shuffleArray(gameState.sessionPlan);
+            gameState.sessionTarget = gameState.sessionPlan.length;
+            gameState.completedToday = 0;
+            
+            if (gameState.sessionPlan.length === 0) {
+                showCelebration("Great job! 🎉", "You're all caught up for today!");
+                return;
+            }
+            
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('gameScreen').classList.add('active');
+            startAdaptiveQuestion();
+        }
+
+        function startAdaptiveQuestion() {
+            if (gameState.completedToday >= gameState.sessionPlan.length) {
+                showSessionComplete();
+                return;
+            }
+            
+            const currentItem = gameState.sessionPlan[gameState.completedToday];
+            gameState.currentWordIndex = currentItem.index;
+            
+            // Show different UI based on whether it's new or review
+            if (currentItem.type === 'new') {
+                showNewWordIntroduction();
+            } else {
+                showQuizQuestion();
+            }
+            
+            updateSessionProgress();
+        }
+
+        function showNewWordIntroduction() {
+            const word = quranicWords[gameState.currentWordIndex];
+            
+            document.getElementById('arabicWord').textContent = word.arabic;
+            document.getElementById('transliteration').textContent = word.transliteration;
+            document.getElementById('wordFrequency').textContent = `NEW WORD: ${word.meaning} • Used ${word.frequency} times`;
+            
+            // Hide options for introduction
+            document.getElementById('optionsContainer').style.display = 'none';
+            
+            // Initialize word progress
+            if (!gameState.wordProgress[gameState.currentWordIndex]) {
+                gameState.wordProgress[gameState.currentWordIndex] = {
+                    correctCount: 0,
+                    totalAttempts: 0,
+                    lastReviewed: new Date().toISOString(),
+                    introduced: new Date().toISOString()
+                };
+            }
+            
+            autoPlayAudio();
+        }
+
+        function showSessionComplete() {
+            const accuracy = gameState.dailyStats.totalToday > 0 ? 
+                (gameState.dailyStats.correctToday / gameState.dailyStats.totalToday * 100).toFixed(0) : 100;
+            
+            showCelebration("Session Complete! 🎊", `Great work! ${accuracy}% accuracy today`);
+            
+            setTimeout(() => {
+                backToMenu();
+                updateAdaptiveUI();
+            }, 2000);
+        }
+
+        function generateQuizOptions(correctWord) {
+            const options = [correctWord.meaning];
+            const otherWords = quranicWords.filter(w => w !== correctWord);
+            
+            while (options.length < 4) {
+                const randomWord = otherWords[Math.floor(Math.random() * otherWords.length)];
+                if (!options.includes(randomWord.meaning)) {
+                    options.push(randomWord.meaning);
+                }
+            }
+            
+            return options.sort(() => Math.random() - 0.5);
+        }
+
+        function showWord(index) {
+            const word = quranicWords[index];
+            document.getElementById('arabicWord').textContent = word.arabic;
+            document.getElementById('transliteration').textContent = word.transliteration;
+            document.getElementById('wordFrequency').textContent = `${word.meaning} • Used ${word.frequency} times`;
+            autoPlayAudio();
+        }
+
+        function markDifficult() {
+            gameState.difficultWords.add(gameState.currentWordIndex);
+            saveProgress();
+            showCelebration("Marked for review", "Will appear more often");
+        }
+
+        function levelUp() {
+            gameState.level++;
+            showCelebration("LEVEL UP! 🎊", `Welcome to Level ${gameState.level}!`);
+        }
+
+        function showCelebration(title, text) {
+            document.getElementById('celebration').querySelector('h2').textContent = title;
+            document.getElementById('celebrationText').textContent = text;
+            document.getElementById('celebration').classList.add('show');
+            
+            setTimeout(() => {
+                document.getElementById('celebration').classList.remove('show');
+            }, 2000);
+        }
+
+        function backToMenu() {
+            document.getElementById('mainMenu').style.display = 'block';
+            document.getElementById('gameScreen').classList.remove('active');
+            document.getElementById('progressScreen').classList.remove('active');
+        }
+
+        function showProgress() {
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('progressScreen').classList.add('active');
+            const grid = document.getElementById('wordGrid');
+            grid.innerHTML = '';
+            quranicWords.forEach((word, index) => {
+                const item = document.createElement('div');
+                item.className = 'word-item';
+                if (gameState.wordsLearned.has(index)) {
+                    item.classList.add('mastered');
+                } else if (gameState.difficultWords.has(index)) {
+                    item.classList.add('learning');
+                }
+                item.innerHTML = `
+                    <div style="font-size: 1.5rem; margin-bottom: 5px;">${word.arabic}</div>
+                    <div style="font-size: 0.9rem; opacity: 0.8;">${word.meaning}</div>
+                `;
+                grid.appendChild(item);
+            });
+        }
+
+        // Save progress
+        function saveProgress() {
+            const data = {
+                score: gameState.score,
+                level: gameState.level,
+                wordsLearned: Array.from(gameState.wordsLearned),
+                difficultWords: Array.from(gameState.difficultWords)
+            };
+            localStorage.setItem('quranicWordsProgress', JSON.stringify(data));
+        }
+
+        // Update UI elements
+        function updateUI() {
+            document.getElementById('totalScore').textContent = gameState.score;
+            document.getElementById('wordsLearned').textContent = gameState.wordsLearned.size;
+            document.getElementById('currentStreak').textContent = gameState.streak;
+            document.getElementById('currentLevel').textContent = gameState.level;
+            document.getElementById('gameStreak').textContent = gameState.streak;
+            document.getElementById('gameLevel').textContent = gameState.level;
+            
+            const progress = (gameState.wordsLearned.size / quranicWords.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        // Start game mode
+        window.startGame = function(mode) {
+            gameState.currentMode = mode;
+            gameState.currentWordIndex = 0;
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('gameScreen').classList.add('active');
+            if (mode === 'flashcard') {
+                startFlashcardMode();
+            } else if (mode === 'quiz') {
+                startQuizMode();
+            } else if (mode === 'match') {
+                startMatchMode();
+            }
+        }
+
+        // Flashcard mode
+        function startFlashcardMode() {
+            showWord(gameState.currentWordIndex);
+            document.getElementById('optionsContainer').style.display = 'none';
+        }
+
+        // Quiz mode
+        function startQuizMode() {
+            showQuizQuestion();
+        }
+
+        function showQuizQuestion() {
+            const word = quranicWords[gameState.currentWordIndex];
+            const options = generateQuizOptions(word);
+            
+            document.getElementById('arabicWord').textContent = word.arabic;
+            document.getElementById('transliteration').textContent = word.transliteration;
+            document.getElementById('wordFrequency').textContent = `Used ${word.frequency} times in Quran`;
+            
+            const container = document.getElementById('optionsContainer');
+            container.style.display = 'grid';
+            container.innerHTML = '';
+            
+            options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.onclick = () => checkAnswer(btn, option === word.meaning);
+                container.appendChild(btn);
+            });
+            
+            autoPlayAudio();
+        }
+
+        function generateQuizOptions(correctWord) {
+            const options = [correctWord.meaning];
+            const otherWords = quranicWords.filter(w => w !== correctWord);
+            
+            while (options.length < 4) {
+                const randomWord = otherWords[Math.floor(Math.random() * otherWords.length)];
+                if (!options.includes(randomWord.meaning)) {
+                    options.push(randomWord.meaning);
+                }
+            }
+            
+            return options.sort(() => Math.random() - 0.5);
+        }
+
+        function checkAnswer(btn, isCorrect) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(b => b.disabled = true);
+            
+            // Update statistics
+            gameState.totalQuestions++;
+            gameState.dailyStats.totalToday++;
+            updateWordProgress(isCorrect);
+            
+            if (isCorrect) {
+                btn.classList.add('correct');
+                gameState.score += 10;
+                gameState.streak++;
+                gameState.correctAnswers++;
+                gameState.dailyStats.correctToday++;
+                
+                if (gameState.streak % 10 === 0) {
+                    levelUp();
+                }
+                
+                showCelebration("Correct! 🎉", "+10 points");
+            } else {
+                btn.classList.add('incorrect');
+                gameState.streak = 0;
+                // Show correct answer
+                allBtns.forEach(b => {
+                    if (b.textContent === quranicWords[gameState.currentWordIndex].meaning) {
+                        b.classList.add('correct');
+                    }
+                });
+            }
+            
+            updateUI();
+            saveProgress();
+            
+            // Auto advance in adaptive mode
+            if (gameState.currentMode === 'adaptive') {
+                setTimeout(() => {
+                    gameState.completedToday++;
+                    startAdaptiveQuestion();
+                }, 1500);
+            }
+        }
+
+        function showWord(index) {
+            const word = quranicWords[index];
+            document.getElementById('arabicWord').textContent = word.arabic;
+            document.getElementById('transliteration').textContent = word.transliteration;
+            document.getElementById('wordFrequency').textContent = `${word.meaning} • Used ${word.frequency} times`;
+            autoPlayAudio();
+        }
+
+        function nextQuestion() {
+            if (gameState.currentMode === 'adaptive') {
+                gameState.completedToday++;
+                startAdaptiveQuestion();
+                return;
+            }
+            
+            gameState.currentWordIndex = (gameState.currentWordIndex + 1) % quranicWords.length;
+            
+            if (gameState.currentMode === 'flashcard') {
+                showWord(gameState.currentWordIndex);
+            } else if (gameState.currentMode === 'quiz') {
+                showQuizQuestion();
+            }
+        }
+
+        function markDifficult() {
+            gameState.difficultWords.add(gameState.currentWordIndex);
+            saveProgress();
+            showCelebration("Marked for review", "Will appear more often");
+        }
+
+        function levelUp() {
+            gameState.level++;
+            showCelebration("LEVEL UP! 🎊", `Welcome to Level ${gameState.level}!`);
+        }
+
+        function showCelebration(title, text) {
+            document.getElementById('celebration').querySelector('h2').textContent = title;
+            document.getElementById('celebrationText').textContent = text;
+            document.getElementById('celebration').classList.add('show');
+            
+            setTimeout(() => {
+                document.getElementById('celebration').classList.remove('show');
+            }, 2000);
+        }
+
+        function backToMenu() {
+            document.getElementById('mainMenu').style.display = 'block';
+            document.getElementById('gameScreen').classList.remove('active');
+            document.getElementById('progressScreen').classList.remove('active');
+        }
+
+        function showProgress() {
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('progressScreen').classList.add('active');
+            
+            const grid = document.getElementById('wordGrid');
+            grid.innerHTML = '';
+            
+            quranicWords.forEach((word, index) => {
+                const item = document.createElement('div');
+                item.className = 'word-item';
+                
+                if (gameState.wordsLearned.has(index)) {
+                    item.classList.add('mastered');
+                } else if (gameState.difficultWords.has(index)) {
+                    item.classList.add('learning');
+                }
+                
+                item.innerHTML = `
+                    <div style="font-size: 1.5rem; margin-bottom: 5px;">${word.arabic}</div>
+                    <div style="font-size: 0.9rem; opacity: 0.8;">${word.meaning}</div>
+                `;
+                
+                grid.appendChild(item);
+            });
+        }
+
+
+        // Audio functionality (refactored)
+        class QuranicAudioPlayer {
+            constructor(settings = {}) {
+                this.currentAudio = null;
+                this.settings = Object.assign({
+                    autoPlay: false,
+                    useSpeechSynthesis: true,
+                    volume: 1.0,
+                    forceSpeech: false
+                }, settings);
+            }
+
+            play(word) {
+                this.stop();
+                if (word.audio && !this.settings.forceSpeech) {
+                    this.currentAudio = new Audio(word.audio);
+                    this.currentAudio.volume = this.settings.volume;
+                    this.currentAudio.onerror = () => this.speak(word.arabic);
+                    const playPromise = this.currentAudio.play();
+                    if (playPromise && typeof playPromise.catch === 'function') {
+                        playPromise.catch(() => this.speak(word.arabic));
+                    }
+                } else {
+                    this.speak(word.arabic);
+                }
+                this.visualFeedback();
+            }
+
+            speak(text) {
+                if (this.settings.useSpeechSynthesis && 'speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'ar-SA';
+                    utterance.rate = 0.7;
+                    utterance.pitch = 1;
+                    speechSynthesis.speak(utterance);
+                }
+            }
+
+            stop() {
+                if (this.currentAudio) {
+                    this.currentAudio.pause();
+                    this.currentAudio.currentTime = 0;
+                    this.currentAudio = null;
+                }
+            }
+
+            visualFeedback() {
+                const playBtn = document.getElementById('playBtn');
+                if (playBtn) {
+                    playBtn.style.background = '#27ae60';
+                    setTimeout(() => {
+                        playBtn.style.background = '#e74c3c';
+                    }, 1000);
+                }
+            }
+        }
+
+        const audioPlayer = new QuranicAudioPlayer({
+            autoPlay: false // set to true if you want auto-play by default
+        });
+
+        function playAudio() {
+            const word = quranicWords[gameState.currentWordIndex];
+            audioPlayer.play(word);
+        }
+
+        function speakWord(arabicText) {
+            audioPlayer.speak(arabicText);
+        }
+
+        // Auto-play audio when showing new word (optional)
+        function autoPlayAudio() {
+            // Disabled by default - can be enabled in settings
+            if (gameState.autoPlay) {
+                setTimeout(playAudio, 500);
+            }
+        }
+
+        // Define loadProgress function
+        function loadProgress() {
+            const saved = localStorage.getItem('quranicWordsProgress');
+            if (saved) {
+                const data = JSON.parse(saved);
+                gameState.score = data.score || 0;
+                gameState.level = data.level || 1;
+                gameState.wordsLearned = new Set(data.wordsLearned || []);
+                gameState.difficultWords = new Set(data.difficultWords || []);
+            }
+            updateUI();
+        }
+
+        // Remove duplicate function definitions (keep only one of each)
+        // Remove duplicate: getWordsForReview, getNewWordsToLearn, updateWordProgress, updateSessionProgress, showWord, markDifficult, levelUp, showCelebration, backToMenu, showProgress, generateQuizOptions, startAdaptiveSession, autoPlayAudio
+
+        // Add saveProgress after incrementing completedToday in adaptive mode
+        // Patch checkAnswer and nextQuestion for adaptive mode
+        const originalCheckAnswer = checkAnswer;
+        checkAnswer = function(btn, isCorrect) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(b => b.disabled = true);
+            // Update statistics
+            gameState.totalQuestions++;
+            gameState.dailyStats.totalToday++;
+            updateWordProgress(isCorrect);
+            if (isCorrect) {
+                btn.classList.add('correct');
+                gameState.score += 10;
+                gameState.streak++;
+                gameState.correctAnswers++;
+                gameState.dailyStats.correctToday++;
+                if (gameState.streak % 10 === 0) {
+                    levelUp();
+                }
+                showCelebration("Correct! 🎉", "+10 points");
+            } else {
+                btn.classList.add('incorrect');
+                gameState.streak = 0;
+                // Show correct answer
+                allBtns.forEach(b => {
+                    if (b.textContent === quranicWords[gameState.currentWordIndex].meaning) {
+                        b.classList.add('correct');
+                    }
+                });
+            }
+            updateUI();
+            saveProgress();
+            // Auto advance in adaptive mode
+            if (gameState.currentMode === 'adaptive') {
+                setTimeout(() => {
+                    gameState.completedToday++;
+                    saveProgress();
+                    startAdaptiveQuestion();
+                }, 1500);
+            }
+        };
+
+        const originalNextQuestion = nextQuestion;
+        nextQuestion = function() {
+            if (gameState.currentMode === 'adaptive') {
+                gameState.completedToday++;
+                saveProgress();
+                startAdaptiveQuestion();
+                return;
+            }
+            gameState.currentWordIndex = (gameState.currentWordIndex + 1) % quranicWords.length;
+            if (gameState.currentMode === 'flashcard') {
+                showWord(gameState.currentWordIndex);
+            } else if (gameState.currentMode === 'quiz') {
+                showQuizQuestion();
+            }
+        };
+
+        // Handle startMatchMode stub
+        function startMatchMode() {
+            alert('Match mode coming soon!');
+            backToMenu();
+        }
+
+        // Initialize app
+        loadProgress();
+    </script>
+</body>
+</html>
