@@ -81,6 +81,9 @@ export const ProgressCard: React.FC<ProgressCardProps> = ({ stats }) => {
             Level {stats.current_level}
           </span>
         </div>
+        <div className="mt-2 text-xs text-gray-600">
+          {stats.total_points} points earned
+        </div>
       </div>
     </div>
   )

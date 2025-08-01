@@ -41,32 +41,48 @@ export const useUserProgress = () => {
     try {
       setLoading(true)
       
-      // Calculate stats from user progress
-      const { data: progressData, error } = await supabase
-        .from('user_progress')
+      // Get stats from the view
+      const { data: statsData, error } = await supabase
+        .from('user_stats_view')
         .select('*')
         .eq('user_id', user.id)
+        .single()
 
       if (error) throw error
 
-      const wordsLearned = progressData?.filter(p => p.mastery_level >= 80).length || 0
-      const totalAttempts = progressData?.reduce((sum, p) => sum + p.total_attempts, 0) || 0
-      const correctAnswers = progressData?.reduce((sum, p) => sum + p.correct_answers, 0) || 0
-      const accuracy = totalAttempts > 0 ? Math.round((correctAnswers / totalAttempts) * 100) : 0
-
-      // Mock some stats for now
-      const mockStats: UserStats = {
-        words_learned: wordsLearned,
-        days_streak: 15, // This would need to be calculated from daily activity
-        accuracy,
-        surahs_completed: Math.floor(wordsLearned / 10), // Rough estimate
-        total_points: correctAnswers * 10,
-        current_level: Math.floor(wordsLearned / 20) + 1,
+      if (statsData) {
+        const realStats: UserStats = {
+          words_learned: statsData.words_mastered || 0,
+          days_streak: 15, // This would need daily activity tracking
+          accuracy: statsData.accuracy_percentage || 0,
+          surahs_completed: Math.floor((statsData.words_mastered || 0) / 10),
+          total_points: statsData.total_points || 0,
+          current_level: statsData.current_level || 1,
+        }
+        setStats(realStats)
+      } else {
+        // Default stats for new users
+        const defaultStats: UserStats = {
+          words_learned: 0,
+          days_streak: 0,
+          accuracy: 0,
+          surahs_completed: 0,
+          total_points: 0,
+          current_level: 1,
+        }
+        setStats(defaultStats)
       }
-
-      setStats(mockStats)
     } catch (err) {
       console.error('Error fetching stats:', err)
+      // Set default stats on error
+      setStats({
+        words_learned: 0,
+        days_streak: 0,
+        accuracy: 0,
+        surahs_completed: 0,
+        total_points: 0,
+        current_level: 1,
+      })
     } finally {
       setLoading(false)
     }
