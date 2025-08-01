@@ -27,10 +27,6 @@ export const useUserProgress = () => {
         .from('user_progress')
         .select('*')
         .eq('user_id', user.id)
-        .headers({
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        })
 
       if (error) {
         console.error('Supabase error details:', error)
@@ -55,10 +51,6 @@ export const useUserProgress = () => {
         .from('user_stats_view')
         .select('*')
         .eq('user_id', user.id)
-        .headers({
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        })
 
       if (error) {
         console.error('Stats fetch error:', error)
@@ -114,10 +106,6 @@ export const useUserProgress = () => {
         .select('*')
         .eq('user_id', user.id)
         .eq('word_id', wordId)
-        .headers({
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        })
         .maybeSingle() // Use maybeSingle instead of single to avoid errors when no record exists
 
       if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
@@ -144,10 +132,6 @@ export const useUserProgress = () => {
         .from('user_progress')
         .upsert(progressData, {
           onConflict: 'user_id,word_id'
-        })
-        .headers({
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
         })
 
       if (upsertError) {
