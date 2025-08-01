@@ -191,6 +191,120 @@ const fallbackVerses: Record<string, VerseData> = {
     surahName: 'Al-Ikhlas',
     ayahNumber: 3,
     audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/6237.mp3'
+  },
+  // Common prepositions and particles
+  'إلى': {
+    arabic: 'اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ',
+    english: 'Guide us to the straight path - the path of those upon whom You have bestowed favor.',
+    reference: 'Surah Al-Fatiha 1:6-7',
+    surahName: 'Al-Fatiha',
+    ayahNumber: 6,
+    audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/6.mp3'
+  },
+  'في': {
+    arabic: 'الَّذِي خَلَقَ فَسَوَّىٰ وَالَّذِي قَدَّرَ فَهَدَىٰ',
+    english: 'Who created and proportioned and Who destined and [then] guided.',
+    reference: 'Surah Al-A\'la 87:2-3',
+    surahName: 'Al-A\'la',
+    ayahNumber: 2,
+    audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/6160.mp3'
+  },
+  'على': {
+    arabic: 'الرَّحْمَٰنُ عَلَى الْعَرْشِ اسْتَوَىٰ',
+    english: 'The Most Merciful [who is] above the Throne established.',
+    reference: 'Surah Ta-Ha 20:5',
+    surahName: 'Ta-Ha',
+    ayahNumber: 5,
+    audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1005.mp3'
+  },
+  'عن': {
+    arabic: 'وَمَا يَنطِقُ عَنِ الْهَوَىٰ',
+    english: 'Nor does he speak from [his own] inclination.',
+    reference: 'Surah An-Najm 53:3',
+    surahName: 'An-Najm',
+    ayahNumber: 3,
+    audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/5241.mp3'
+  },
+  'مع': {
+    arabic: 'وَأَنَّ اللَّهَ مَعَ الْمُؤْمِنِينَ',
+    english: 'And that Allah is with the believers.',
+    reference: 'Surah Al-Anfal 8:19',
+    surahName: 'Al-Anfal',
+    ayahNumber: 19,
+    audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1002.mp3'
+  },
+  'عند': {
+    arabic: 'وَمَا عِندَ اللَّهِ خَيْرٌ وَأَبْقَىٰ',
+    english: 'But what is with Allah is better and more lasting.',
+    reference: 'Surah Ash-Shura 42:36',
+    surahName: 'Ash-Shura',
+    ayahNumber: 36,
+    audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/4898.mp3'
+  },
+  'بين': {
+    arabic: 'وَجَعَلْنَا بَيْنَهُمْ وَبَيْنَ الْقُرَى الَّتِي بَارَكْنَا فِيهَا قُرًى ظَاهِرَةً',
+    english: 'And We placed between them and the cities which We had blessed, cities standing out.',
+    reference: 'Surah Saba 34:18',
+    surahName: 'Saba',
+    ayahNumber: 18,
+    audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/4280.mp3'
+  },
+  'بعد': {
+    arabic: 'وَمِن بَعْدِ غَلَبِهِمْ سَيَغْلِبُونَ',
+    english: 'But they, after their defeat, will overcome.',
+    reference: 'Surah Ar-Rum 30:3',
+    surahName: 'Ar-Rum',
+    ayahNumber: 3,
+    audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/3908.mp3'
+  },
+  'قبل': {
+    arabic: 'وَكَانُوا مِن قَبْلُ يَسْتَفْتِحُونَ عَلَى الَّذِينَ كَفَرُوا',
+    english: 'And they used to pray for victory against those who disbelieved.',
+    reference: 'Surah Al-Baqarah 2:89',
+    surahName: 'Al-Baqarah',
+    ayahNumber: 89,
+    audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/89.mp3'
+  },
+  // Articles and common particles
+  'ال': {
+    arabic: 'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ',
+    english: 'All praise is due to Allah, Lord of the worlds.',
+    reference: 'Surah Al-Fatiha 1:2',
+    surahName: 'Al-Fatiha',
+    ayahNumber: 2,
+    audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/2.mp3'
+  },
+  'و': {
+    arabic: 'وَالْعَصْرِ إِنَّ الْإِنسَانَ لَفِي خُسْرٍ',
+    english: 'By time, indeed mankind is in loss.',
+    reference: 'Surah Al-Asr 103:1-2',
+    surahName: 'Al-Asr',
+    ayahNumber: 1,
+    audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/6193.mp3'
+  },
+  'ب': {
+    arabic: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
+    english: 'In the name of Allah, the Entirely Merciful, the Especially Merciful.',
+    reference: 'Surah Al-Fatiha 1:1',
+    surahName: 'Al-Fatiha',
+    ayahNumber: 1,
+    audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3'
+  },
+  'ل': {
+    arabic: 'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ',
+    english: 'All praise is due to Allah, Lord of the worlds.',
+    reference: 'Surah Al-Fatiha 1:2',
+    surahName: 'Al-Fatiha',
+    ayahNumber: 2,
+    audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/2.mp3'
+  },
+  'ف': {
+    arabic: 'فَإِذَا فَرَغْتَ فَانصَبْ',
+    english: 'So when you have finished [your duties], then stand up [for worship].',
+    reference: 'Surah Ash-Sharh 94:7',
+    surahName: 'Ash-Sharh',
+    ayahNumber: 7,
+    audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/6173.mp3'
   }
 }
 
