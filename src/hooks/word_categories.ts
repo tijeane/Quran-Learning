@@ -1,4 +1,4 @@
-// wordCategories.ts - Categorization and phrase data for the two-tier system
+// src/hooks/wordCategories.ts - Categorization and phrase data for the two-tier system
 
 export type WordType = 'function' | 'content'
 
@@ -20,8 +20,11 @@ export const functionWords = new Set([
   // Common particles and connectors
   'ما', 'لا', 'إن', 'أن', 'كان', 'كانوا', 'كانت', 'لم', 'لن', 'قد', 'قال', 'كل',
   
-  // Pronouns and relative pronouns
-  'هو', 'هي', 'هم', 'هن', 'أنت', 'أنتم', 'أنا', 'نحن', 'الذي', 'الذين', 'التي', 'اللتان', 'اللتين', 'اللاتي',
+  // Pronouns and possessive pronouns
+  'هو', 'هي', 'هم', 'هن', 'أنت', 'أنتم', 'أنا', 'نحن', 'لهم', 'لها', 'له', 'لك', 'لكم', 'لنا', 'بهم', 'بها', 'به', 'بك', 'فيهم', 'فيها', 'فيه', 'عليهم', 'عليها', 'عليه', 'عنهم', 'عنها', 'عنه',
+  
+  // Relative pronouns
+  'الذي', 'الذين', 'التي', 'اللتان', 'اللتين', 'اللاتي',
   
   // Demonstratives
   'هذا', 'هذه', 'ذلك', 'تلك', 'أولئك',
@@ -362,18 +365,51 @@ export const functionWordPhrases: Record<string, WordPhrase[]> = {
     }
   ],
   
-  'ل': [
+  'لهم': [
     {
-      arabic: 'لله ما في السماوات',
-      transliteration: 'lillahi ma fi\'s-samawat',
-      english: 'to Allah belongs what is in the heavens',
-      context: 'Divine ownership of all creation'
+      arabic: 'لهم جنات',
+      transliteration: 'lahum jannat',
+      english: 'for them are gardens',
+      context: 'Promise of Paradise for believers'
+    },
+    {
+      arabic: 'لهم أجر عظيم',
+      transliteration: 'lahum ajrun \'azim',
+      english: 'for them is a great reward',
+      context: 'Divine reward for good deeds'
+    },
+    {
+      arabic: 'لهم ما يشاءون',
+      transliteration: 'lahum ma yasha\'un',
+      english: 'for them is whatever they wish',
+      context: 'Abundance in Paradise'
+    },
+    {
+      arabic: 'لهم البشرى',
+      transliteration: 'lahum al-bushra',
+      english: 'for them is good news',
+      context: 'Glad tidings for the righteous'
+    },
+    {
+      arabic: 'لهم عذاب أليم',
+      transliteration: 'lahum \'adhabun alim',
+      english: 'for them is a painful punishment',
+      context: 'Warning for wrongdoers'
+    }
+  ],
+  
+  'له': [
+    {
+      arabic: 'له ما في السماوات',
+      transliteration: 'lahu ma fi\'s-samawat',
+      english: 'to Him belongs what is in the heavens',
+      context: 'Allah\'s ownership of all creation'
     },
     {
       arabic: 'له الحمد',
       transliteration: 'lahu\'l-hamd',
       english: 'to Him is praise',
-      context: 'Praise belongs to Allah'
+      context: 'All praise belongs to Allah'
     },
     {
       arabic: 'له الملك',
@@ -382,16 +418,103 @@ export const functionWordPhrases: Record<string, WordPhrase[]> = {
       context: 'Allah\'s absolute authority'
     },
     {
-      arabic: 'لعلهم يتذكرون',
-      transliteration: 'la\'allahum yatadhakkarun',
-      english: 'that they might remember',
-      context: 'Purpose of divine signs and warnings'
+      arabic: 'له الأسماء الحسنى',
+      transliteration: 'lahu\'l-asma\' al-husna',
+      english: 'to Him belong the most beautiful names',
+      context: 'Allah\'s perfect attributes'
     },
     {
-      arabic: 'ليس كمثله شيء',
-      transliteration: 'laysa kamithlihi shay\'',
-      english: 'there is nothing like Him',
-      context: 'Allah\'s absolute uniqueness'
+      arabic: 'له ما يشاء',
+      transliteration: 'lahu ma yasha\'',
+      english: 'to Him belongs whatever He wills',
+      context: 'Allah\'s absolute will'
+    }
+  ],
+  
+  'لها': [
+    {
+      arabic: 'لها ما كسبت',
+      transliteration: 'laha ma kasabat',
+      english: 'for it is what it earned',
+      context: 'Each soul gets what it deserves'
+    },
+    {
+      arabic: 'لها عذاب',
+      transliteration: 'laha \'adhab',
+      english: 'for it is punishment',
+      context: 'Consequence for wrongdoing'
+    },
+    {
+      arabic: 'لها أجر',
+      transliteration: 'laha ajr',
+      english: 'for it is reward',
+      context: 'Recompense for good deeds'
+    },
+    {
+      arabic: 'لها ما تشاء',
+      transliteration: 'laha ma tasha\'',
+      english: 'for it is whatever it wishes',
+      context: 'Fulfillment of desires'
+    }
+  ],
+  
+  'بهم': [
+    {
+      arabic: 'والله بهم عليم',
+      transliteration: 'wa\'llahu bihim \'alim',
+      english: 'and Allah is Knowing of them',
+      context: 'Allah\'s complete awareness'
+    },
+    {
+      arabic: 'كان بهم رحيماً',
+      transliteration: 'kana bihim rahima',
+      english: 'He is merciful to them',
+      context: 'Allah\'s mercy toward people'
+    },
+    {
+      arabic: 'فعل بهم',
+      transliteration: 'fa\'ala bihim',
+      english: 'He did to them',
+      context: 'Divine action or intervention'
+    },
+    {
+      arabic: 'ما بهم من نعمة',
+      transliteration: 'ma bihim min ni\'ma',
+      english: 'whatever blessing they have',
+      context: 'Recognition of Allah\'s blessings'
+    }
+  ],
+  
+  'عليهم': [
+    {
+      arabic: 'عليهم دائرة السوء',
+      transliteration: '\'alayhim da\'iratu\'s-su\'',
+      english: 'upon them is the evil turn of fortune',
+      context: 'Consequence for wrongdoing'
+    },
+    {
+      arabic: 'أنعم الله عليهم',
+      transliteration: 'an\'ama\'llahu \'alayhim',
+      english: 'Allah bestowed favor upon them',
+      context: 'Divine blessing and guidance'
+    },
+    {
+      arabic: 'لا خوف عليهم',
+      transliteration: 'la khawfun \'alayhim',
+      english: 'no fear upon them',
+      context: 'Divine reassurance for believers'
+    },
+    {
+      arabic: 'السلام عليهم',
+      transliteration: 'as-salamu \'alayhim',
+      english: 'peace be upon them',
+      context: 'Greeting and blessing'
+    },
+    {
+      arabic: 'غضب الله عليهم',
+      transliteration: 'ghadiba\'llahu \'alayhim',
+      english: 'Allah\'s wrath is upon them',
+      context: 'Divine displeasure with wrongdoers'
     }
   ]
 }
