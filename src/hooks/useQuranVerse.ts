@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Word } from '../lib/supabase'
 
 // Toggle this flag to switch between simulated data and real API calls
-const USE_SIMULATED_DATA = false
+const USE_SIMULATED_DATA = true
 
 export interface VerseData {
   arabic: string
