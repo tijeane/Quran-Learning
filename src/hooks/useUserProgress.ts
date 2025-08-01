@@ -27,11 +27,20 @@ export const useUserProgress = () => {
         .from('user_progress')
         .select('*')
         .eq('user_id', user.id)
+        .headers({
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        })
 
-      if (error) throw error
+      if (error) {
+        console.error('Supabase error details:', error)
+        throw error
+      }
       setProgress(data || [])
     } catch (err) {
       console.error('Error fetching progress:', err)
+      // Set empty array on error to prevent app crashes
+      setProgress([])
     }
   }
 
@@ -41,13 +50,20 @@ export const useUserProgress = () => {
     try {
       setLoading(true)
       
-      // Get stats from the view
+      // Get stats from the view with proper headers
       const { data: statsData, error } = await supabase
         .from('user_stats_view')
         .select('*')
         .eq('user_id', user.id)
+        .headers({
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        })
 
-      if (error) throw error
+      if (error) {
+        console.error('Stats fetch error:', error)
+        throw error
+      }
 
       if (statsData && statsData.length > 0) {
         const userStats = statsData[0]
@@ -92,16 +108,26 @@ export const useUserProgress = () => {
     if (!user) return
 
     try {
-      // Get existing progress or create new
-      const { data: existing } = await supabase
+      // Get existing progress or create new with proper headers
+      const { data: existing, error: fetchError } = await supabase
         .from('user_progress')
         .select('*')
         .eq('user_id', user.id)
         .eq('word_id', wordId)
-        .single()
+        .headers({
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        })
+        .maybeSingle() // Use maybeSingle instead of single to avoid errors when no record exists
 
-      const newCorrectAnswers = (existing?.correct_answers || 0) + (correct ? 1 : 0)
-      const newTotalAttempts = (existing?.total_attempts || 0) + 1
+      if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+        console.error('Error fetching existing progress:', fetchError)
+        throw fetchError
+      }
+
+      const existingRecord = existing || null
+      const newCorrectAnswers = (existingRecord?.correct_answers || 0) + (correct ? 1 : 0)
+      const newTotalAttempts = (existingRecord?.total_attempts || 0) + 1
       const newMasteryLevel = Math.min(100, Math.round((newCorrectAnswers / newTotalAttempts) * 100))
 
       const progressData = {
@@ -114,11 +140,20 @@ export const useUserProgress = () => {
         next_review: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Next day
       }
 
-      const { error } = await supabase
+      const { error: upsertError } = await supabase
         .from('user_progress')
-        .upsert(progressData)
+        .upsert(progressData, {
+          onConflict: 'user_id,word_id'
+        })
+        .headers({
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        })
 
-      if (error) throw error
+      if (upsertError) {
+        console.error('Error upserting progress:', upsertError)
+        throw upsertError
+      }
 
       // Refresh data
       await fetchProgress()
