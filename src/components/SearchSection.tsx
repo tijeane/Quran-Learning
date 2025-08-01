@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react'
-import { Search, Filter } from 'lucide-react'
+import { Search, Filter, ChevronDown, ChevronUp } from 'lucide-react'
 import { WordCard } from './WordCard'
 import type { Word, UserProgress } from '../lib/supabase'
 
@@ -16,6 +16,8 @@ export const SearchSection: React.FC<SearchSectionProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterBy, setFilterBy] = useState<'all' | 'mastered' | 'learning'>('all')
+  const [showAll, setShowAll] = useState(false)
+  const [wordsPerPage] = useState(12) // Show 12 words initially
 
   const filteredWords = useMemo(() => {
     return words.filter(word => {
@@ -36,6 +38,9 @@ export const SearchSection: React.FC<SearchSectionProps> = ({
       return matchesSearch && matchesFilter
     })
   }, [words, searchTerm, filterBy])
+
+  const displayedWords = showAll ? filteredWords : filteredWords.slice(0, wordsPerPage)
+  const hasMoreWords = filteredWords.length > wordsPerPage
 
   return (
     <div className="bg-white rounded-lg p-6 shadow-md">
@@ -71,7 +76,7 @@ export const SearchSection: React.FC<SearchSectionProps> = ({
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {filteredWords.map((word) => (
+        {displayedWords.map((word) => (
           <WordCard
             key={word.id}
             word={word}
@@ -84,7 +89,31 @@ export const SearchSection: React.FC<SearchSectionProps> = ({
         ))}
       </div>
       
-      {filteredWords.length === 0 && (
+      {hasMoreWords && !showAll && (
+        <div className="text-center mt-6">
+          <button
+            onClick={() => setShowAll(true)}
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center gap-2 mx-auto"
+          >
+            Show More Words ({filteredWords.length - wordsPerPage} remaining)
+            <ChevronDown className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+      
+      {showAll && hasMoreWords && (
+        <div className="text-center mt-6">
+          <button
+            onClick={() => setShowAll(false)}
+            className="bg-gray-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-gray-700 transition-colors flex items-center gap-2 mx-auto"
+          >
+            Show Less
+            <ChevronUp className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+      
+      {displayedWords.length === 0 && (
         <div className="text-center py-8 text-gray-500">
           <Search className="w-12 h-12 mx-auto mb-4 opacity-50" />
           <p>No words found matching your search criteria.</p>

@@ -149,18 +149,29 @@ function App() {
             <p className="text-gray-600">Loading words...</p>
           </div>
         ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Search Section - Full width on mobile, spans 2 columns on desktop */}
-          <div className="lg:col-span-2">
-            <SearchSection 
-              words={words} 
-              onWordClick={handleWordClick}
-              getWordProgress={getWordProgress}
-            />
-          </div>
+        <div className="space-y-8">
+          {/* Quick Actions - Now at the top */}
+          <QuickActions
+            onSmartLearning={handleSmartLearning}
+            onStartQuiz={handleQuiz}
+            onFlashcards={handleFlashcards}
+            onReviewWords={handleReviewWords}
+            onPracticeMode={handlePracticeMode}
+            onAddWord={handleAddWord}
+          />
           
-          {/* Sidebar */}
-          <div className="space-y-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Search Section - Full width on mobile, spans 2 columns on desktop */}
+            <div className="lg:col-span-2">
+              <SearchSection 
+                words={words} 
+                onWordClick={handleWordClick}
+                getWordProgress={getWordProgress}
+              />
+            </div>
+            
+            {/* Sidebar */}
+            <div className="space-y-8">
             {user && stats && (
               <ProgressCard stats={stats} />
             )}
@@ -181,14 +192,7 @@ function App() {
                 </button>
               </div>
             )}
-            <QuickActions
-              onSmartLearning={handleSmartLearning}
-              onStartQuiz={handleQuiz}
-              onFlashcards={handleFlashcards}
-              onReviewWords={handleReviewWords}
-              onPracticeMode={handlePracticeMode}
-              onAddWord={handleAddWord}
-            />
+            </div>
           </div>
         </div>
         )}
