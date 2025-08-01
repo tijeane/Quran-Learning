@@ -58,12 +58,13 @@ export const WordDetailModal: React.FC<WordDetailModalProps> = ({
   const playVerseAudio = () => {
     if (!verseData?.audioUrl) return
     
+    console.log('🔊 Playing verse audio:', verseData.audioUrl)
     setIsPlayingVerse(true)
     const audio = new Audio(verseData.audioUrl)
     audio.onended = () => setIsPlayingVerse(false)
     audio.onerror = () => {
       setIsPlayingVerse(false)
-      console.error('Failed to play verse audio')
+      console.error('❌ Failed to play verse audio:', verseData.audioUrl)
     }
     audio.play()
   }

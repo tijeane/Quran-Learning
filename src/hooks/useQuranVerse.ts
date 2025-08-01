@@ -150,19 +150,30 @@ export const useQuranVerse = () => {
     } else {
       // Real API implementation using api.alquran.cloud search endpoint
       try {
+        console.log('🔍 Starting verse search for word:', word.arabic, word.english)
+        
         // Step 1: Search for the word in English translations to find relevant verses
         const searchKeyword = encodeURIComponent(word.english)
         const searchUrl = `https://api.alquran.cloud/v1/search/${searchKeyword}/all/en.sahih`
         
+        console.log('📡 Making search API call to:', searchUrl)
+        
         const searchResponse = await fetch(searchUrl)
         
+        console.log('📥 Search response status:', searchResponse.status)
+        console.log('📥 Search response ok:', searchResponse.ok)
+        
         if (!searchResponse.ok) {
+          console.error('❌ Search API request failed with status:', searchResponse.status)
           throw new Error(`Search API request failed: ${searchResponse.status}`)
         }
 
         const searchData: SearchResult = await searchResponse.json()
+        console.log('📊 Search data received:', searchData)
+        console.log('📊 Number of matches found:', searchData.matches?.length || 0)
 
         if (!searchData.matches || searchData.matches.length === 0) {
+          console.warn('⚠️ No matches found for word:', word.english)
           setVerseError(`No verses found containing the word "${word.english}". Try searching for a different word or check the spelling.`)
           setVerseLoading(false)
           return
@@ -170,8 +181,10 @@ export const useQuranVerse = () => {
 
         // Get the first match
         const firstMatch = searchData.matches[0]
+        console.log('🎯 First match:', firstMatch)
         const surahNumber = firstMatch.surah.number
         const ayahNumber = firstMatch.numberInSurah
+        console.log('📖 Surah:', surahNumber, 'Ayah:', ayahNumber)
 
         // Step 2: Fetch the Arabic text for this specific ayah
         const arabicUrl = `https://api.alquran.cloud/v1/ayah/${surahNumber}:${ayahNumber}/quran-uthmani`
@@ -179,18 +192,27 @@ export const useQuranVerse = () => {
         // Step 3: Fetch the audio for this specific ayah (using Mishary Alafasy's recitation)
         const audioUrl = `https://api.alquran.cloud/v1/ayah/${surahNumber}:${ayahNumber}/ar.alafasy`
 
+        console.log('📡 Making Arabic text API call to:', arabicUrl)
+        console.log('📡 Making audio API call to:', audioUrl)
+        
         const [arabicResponse, audioResponse] = await Promise.all([
           fetch(arabicUrl),
           fetch(audioUrl)
         ])
 
+        console.log('📥 Arabic response status:', arabicResponse.status, 'ok:', arabicResponse.ok)
+        console.log('📥 Audio response status:', audioResponse.status, 'ok:', audioResponse.ok)
+        
         if (!arabicResponse.ok) {
+          console.error('❌ Arabic text API request failed with status:', arabicResponse.status)
           throw new Error(`Arabic text API request failed: ${arabicResponse.status}`)
         }
 
         const arabicData: AyahResponse = await arabicResponse.json()
+        console.log('📊 Arabic data received:', arabicData)
 
         if (arabicData.code !== 200) {
+          console.error('❌ Arabic text API returned error code:', arabicData.code)
           throw new Error('Arabic text API returned error response')
         }
 
@@ -202,27 +224,38 @@ export const useQuranVerse = () => {
           surahName: firstMatch.surah.englishName,
           ayahNumber: ayahNumber
         }
+        
+        console.log('📝 Prepared verse data:', verseData)
 
         // Handle audio response
         if (audioResponse.ok) {
           const audioData: AyahResponse = await audioResponse.json()
+          console.log('🔊 Audio data received:', audioData)
+          
           if (audioData.code === 200 && audioData.data.text) {
             // The audio URL is typically in the format returned by the API
             // For Alafasy's recitation, construct the CDN URL
             const ayahGlobalNumber = arabicData.data.number
+            console.log('🔊 Ayah global number:', ayahGlobalNumber)
             verseData.audioUrl = `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${ayahGlobalNumber}.mp3`
+            console.log('🔊 Constructed audio URL:', verseData.audioUrl)
           }
+        } else {
+          console.warn('⚠️ Audio response not ok, skipping audio URL')
         }
 
+        console.log('✅ Final verse data with audio:', verseData)
         setVerseData(verseData)
       } catch (err) {
-        console.error('Error fetching verse:', err)
+        console.error('❌ Error fetching verse:', err)
+        console.error('❌ Error stack:', err instanceof Error ? err.stack : 'No stack trace')
         setVerseError(
           err instanceof Error 
             ? `Failed to fetch verse: ${err.message}` 
             : 'Network error occurred while fetching verse'
         )
       } finally {
+        console.log('🏁 Verse fetching completed')
         setVerseLoading(false)
       }
     }

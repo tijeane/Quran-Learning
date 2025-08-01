@@ -17,32 +17,40 @@ export const WordCard: React.FC<WordCardProps> = ({
 
   const playAudio = (e: React.MouseEvent) => {
     e.stopPropagation()
+    console.log('🔊 Playing word audio for:', word.arabic)
+    console.log('🔊 Word audio URL from database:', word.audio_url)
     setIsPlaying(true)
     
     // Prioritize word.audio_url from database, fallback to text-to-speech
     if (word.audio_url && word.audio_url.trim() !== '') {
+      console.log('🔊 Using database audio URL:', word.audio_url)
       const audio = new Audio(word.audio_url)
       audio.onended = () => setIsPlaying(false)
       audio.onerror = () => {
+        console.error('❌ Database audio failed, falling back to text-to-speech')
         setIsPlaying(false)
         // Fallback to text-to-speech if audio URL fails
         playTextToSpeech()
       }
       audio.play()
     } else {
+      console.log('🔊 No database audio URL, using text-to-speech')
       playTextToSpeech()
     }
   }
 
   const playTextToSpeech = () => {
+    console.log('🗣️ Using text-to-speech for:', word.arabic)
     if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(word.arabic)
       utterance.lang = 'ar-SA'
       utterance.rate = 0.8
       utterance.onend = () => setIsPlaying(false)
       utterance.onerror = () => setIsPlaying(false)
+      console.log('🗣️ Starting speech synthesis')
       speechSynthesis.speak(utterance)
     } else {
+      console.warn('⚠️ Speech synthesis not supported in this browser')
       setTimeout(() => setIsPlaying(false), 1000)
     }
   }
