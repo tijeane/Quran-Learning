@@ -152,32 +152,64 @@ export const useQuranVerse = () => {
       try {
         console.log('🔍 Starting verse search for word:', word.arabic, word.english)
         
-        // Step 1: Search for the word in English translations to find relevant verses
-        const searchKeyword = encodeURIComponent(word.english)
-        const searchUrl = `https://api.alquran.cloud/v1/search/${searchKeyword}/all/en.sahih`
+        // Create multiple search strategies for better results
+        const searchStrategies = [
+          // Strategy 1: Use transliteration (often more specific than English)
+          { term: word.transliteration, type: 'transliteration' },
+          // Strategy 2: Use English meaning (but filter out very common words)
+          ...(word.english.length > 2 && !['in', 'of', 'the', 'and', 'to', 'a', 'is', 'it', 'he', 'she', 'we', 'you', 'they'].includes(word.english.toLowerCase()) 
+            ? [{ term: word.english, type: 'english' }] 
+            : []),
+          // Strategy 3: Use Arabic text directly (fallback)
+          { term: word.arabic, type: 'arabic' }
+        ]
         
-        console.log('📡 Making search API call to:', searchUrl)
+        console.log('🎯 Search strategies:', searchStrategies)
         
-        const searchResponse = await fetch(searchUrl)
+        let searchData: SearchResult | null = null
+        let usedStrategy = null
         
-        console.log('📥 Search response status:', searchResponse.status)
-        console.log('📥 Search response ok:', searchResponse.ok)
-        
-        if (!searchResponse.ok) {
-          console.error('❌ Search API request failed with status:', searchResponse.status)
-          throw new Error(`Search API request failed: ${searchResponse.status}`)
+        // Try each search strategy until we find results
+        for (const strategy of searchStrategies) {
+          console.log(`🔍 Trying ${strategy.type} search with term:`, strategy.term)
+          
+          const searchKeyword = encodeURIComponent(strategy.term)
+          const searchUrl = `https://api.alquran.cloud/v1/search/${searchKeyword}/all/en.sahih`
+          
+          console.log('📡 Making search API call to:', searchUrl)
+          
+          const searchResponse = await fetch(searchUrl)
+          
+          console.log('📥 Search response status:', searchResponse.status)
+          console.log('📥 Search response ok:', searchResponse.ok)
+          
+          if (!searchResponse.ok) {
+            console.error(`❌ Search API request failed with status: ${searchResponse.status} for strategy: ${strategy.type}`)
+            continue // Try next strategy
+          }
+
+          const tempSearchData: SearchResult = await searchResponse.json()
+          console.log(`📊 Search data received for ${strategy.type}:`, tempSearchData)
+          console.log(`📊 Number of matches found for ${strategy.type}:`, tempSearchData.matches?.length || 0)
+
+          if (tempSearchData.matches && tempSearchData.matches.length > 0) {
+            searchData = tempSearchData
+            usedStrategy = strategy
+            console.log(`✅ Found results using ${strategy.type} strategy`)
+            break // Success! Use these results
+          } else {
+            console.log(`❌ No results for ${strategy.type} strategy, trying next...`)
+          }
         }
-
-        const searchData: SearchResult = await searchResponse.json()
-        console.log('📊 Search data received:', searchData)
-        console.log('📊 Number of matches found:', searchData.matches?.length || 0)
-
-        if (!searchData.matches || searchData.matches.length === 0) {
-          console.warn('⚠️ No matches found for word:', word.english)
-          setVerseError(`No verses found containing the word "${word.english}". Try searching for a different word or check the spelling.`)
+        
+        if (!searchData || !searchData.matches || searchData.matches.length === 0) {
+          console.warn('⚠️ No matches found for word with any strategy:', word.arabic, word.english, word.transliteration)
+          setVerseError(`No verses found containing "${word.english}" or "${word.transliteration}". This word might be very rare or the search terms might need adjustment.`)
           setVerseLoading(false)
           return
         }
+        
+        console.log(`🎉 Successfully found ${searchData.matches.length} matches using ${usedStrategy?.type} strategy`)
 
         // Get the first match
         const firstMatch = searchData.matches[0]
