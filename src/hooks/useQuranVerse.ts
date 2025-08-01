@@ -151,6 +151,46 @@ const fallbackVerses: Record<string, VerseData> = {
     surahName: 'Adh-Dhariyat',
     ayahNumber: 56,
     audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/5185.mp3'
+  },
+  'كان': {
+    arabic: 'وَكَانَ اللَّهُ عَلِيمًا حَكِيمًا',
+    english: 'And Allah is ever Knowing and Wise.',
+    reference: 'Surah An-Nisa 4:17',
+    surahName: 'An-Nisa',
+    ayahNumber: 17,
+    audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/542.mp3'
+  },
+  'كانوا': {
+    arabic: 'وَكَانُوا مِن قَبْلُ يَسْتَفْتِحُونَ عَلَى الَّذِينَ كَفَرُوا',
+    english: 'And they used to pray for victory against those who disbelieved.',
+    reference: 'Surah Al-Baqarah 2:89',
+    surahName: 'Al-Baqarah',
+    ayahNumber: 89,
+    audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/89.mp3'
+  },
+  'كانت': {
+    arabic: 'وَكَانَت مِّن الْقَانِتِينَ',
+    english: 'And she was of the devoutly obedient.',
+    reference: 'Surah At-Tahrim 66:12',
+    surahName: 'At-Tahrim',
+    ayahNumber: 12,
+    audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/5565.mp3'
+  },
+  'لا': {
+    arabic: 'لَا إِلَٰهَ إِلَّا اللَّهُ',
+    english: 'There is no deity except Allah.',
+    reference: 'Surah Muhammad 47:19',
+    surahName: 'Muhammad',
+    ayahNumber: 19,
+    audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/5059.mp3'
+  },
+  'لم': {
+    arabic: 'لَمْ يَلِدْ وَلَمْ يُولَدْ',
+    english: 'He neither begets nor is born.',
+    reference: 'Surah Al-Ikhlas 112:3',
+    surahName: 'Al-Ikhlas',
+    ayahNumber: 3,
+    audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/6237.mp3'
   }
 }
 
@@ -221,11 +261,19 @@ export const useQuranVerse = () => {
       const searchStrategies = [
         // Strategy 1: Use transliteration (often more specific than English)
         { term: word.transliteration, type: 'transliteration' },
-        // Strategy 2: Use English meaning (but filter out very common words)
-        ...(word.english.length > 2 && !['in', 'of', 'the', 'and', 'to', 'a', 'is', 'it', 'he', 'she', 'we', 'you', 'they'].includes(word.english.toLowerCase()) 
+        // Strategy 2: Use English meaning (but filter out very common words that are too generic)
+        ...(word.english.length > 2 && !['in', 'of', 'the', 'and', 'to', 'a', 'is', 'it', 'he', 'she', 'we', 'you', 'they', 'was', 'were', 'are', 'be', 'been', 'have', 'has', 'had', 'will', 'would', 'could', 'should'].includes(word.english.toLowerCase()) 
           ? [{ term: word.english, type: 'english' }] 
           : []),
-        // Strategy 3: Use Arabic text directly (fallback)
+        // Strategy 3: For verb forms like "kana", try variations
+        ...(word.transliteration.toLowerCase().includes('kan') 
+          ? [
+              { term: 'كان', type: 'arabic-variation' },
+              { term: 'كانوا', type: 'arabic-variation' },
+              { term: 'كانت', type: 'arabic-variation' }
+            ] 
+          : []),
+        // Strategy 4: Use Arabic text directly (fallback)
         { term: word.arabic, type: 'arabic' }
       ]
       
