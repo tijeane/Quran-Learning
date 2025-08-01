@@ -46,18 +46,18 @@ export const useUserProgress = () => {
         .from('user_stats_view')
         .select('*')
         .eq('user_id', user.id)
-        .single()
 
       if (error) throw error
 
-      if (statsData) {
+      if (statsData && statsData.length > 0) {
+        const userStats = statsData[0]
         const realStats: UserStats = {
-          words_learned: statsData.words_mastered || 0,
+          words_learned: userStats.words_mastered || 0,
           days_streak: 15, // This would need daily activity tracking
-          accuracy: statsData.accuracy_percentage || 0,
-          surahs_completed: Math.floor((statsData.words_mastered || 0) / 10),
-          total_points: statsData.total_points || 0,
-          current_level: statsData.current_level || 1,
+          accuracy: userStats.accuracy_percentage || 0,
+          surahs_completed: Math.floor((userStats.words_mastered || 0) / 10),
+          total_points: userStats.total_points || 0,
+          current_level: userStats.current_level || 1,
         }
         setStats(realStats)
       } else {
