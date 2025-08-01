@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quran Words App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem 0;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            flex: 1;
+            display: grid;
+            gap: 1.5rem;
+            grid-template-columns: 1fr;
+        }
+
+        /* Tablet and larger screens */
+        @media (min-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr 1fr;
+                gap: 2rem;
+            }
+        }
+
+        /* Desktop screens */
+        @media (min-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr 2fr 1fr;
+                gap: 2.5rem;
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h2 {
+            color: #4a5568;
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .search-section {
+            grid-column: 1 / -1;
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a0aec0;
+            font-size: 1.2rem;
+        }
+
+        .word-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        /* Mobile optimization for word grid */
+        @media (max-width: 480px) {
+            .word-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 0.5rem;
+            }
+        }
+
+        .word-item {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 0.75rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .word-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(240, 147, 251, 0.4);
+        }
+
+        .word-item:active {
+            transform: scale(0.98);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            font-weight: 700;
+            color: #2d3748;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+            color: #4a5568;
+            margin-top: 0.25rem;
+        }
+
+        .progress-section {
+            margin-top: 1.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 6px;
+            transition: width 0.5s ease;
+            width: 65%;
+        }
+
+        .progress-text {
+            font-size: 0.9rem;
+            color: #4a5568;
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+            text-align: center;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #f8fafc;
+            border-color: #cbd5e0;
+        }
+
+        /* Mobile-specific optimizations */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.75rem;
+            }
+
+            .card {
+                padding: 1.25rem;
+                border-radius: 12px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                min-width: auto;
+                width: 100%;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Large mobile screens */
+        @media (max-width: 480px) {
+            .header {
+                margin-bottom: 1.5rem;
+                padding: 1rem 0;
+            }
+
+            .main-content {
+                gap: 1rem;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                gap: 0.75rem;
+            }
+
+            .stat-item {
+                padding: 0.75rem;
+            }
+        }
+
+        /* Touch-friendly improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .word-item {
+                min-height: 48px;
+                padding: 1rem 0.75rem;
+            }
+
+            .btn {
+                min-height: 48px;
+                padding: 1rem 1.5rem;
+            }
+
+            .search-input {
+                padding: 1rem 1rem 1rem 3rem;
+                min-height: 48px;
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            .card {
+                background: rgba(45, 55, 72, 0.9);
+                color: #e2e8f0;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .card h2 {
+                color: #e2e8f0;
+            }
+
+            .search-input {
+                background: #2d3748;
+                border-color: #4a5568;
+                color: #e2e8f0;
+            }
+
+            .search-input:focus {
+                background: #1a202c;
+                border-color: #667eea;
+            }
+
+            .btn-secondary {
+                background: #2d3748;
+                color: #e2e8f0;
+                border-color: #4a5568;
+            }
+
+            .btn-secondary:hover {
+                background: #1a202c;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>📖 Quran Words</h1>
+            <p>Learn and practice Quranic vocabulary with interactive exercises</p>
+        </header>
+
+        <main class="main-content">
+            <section class="card search-section">
+                <h2>🔍 Search Words</h2>
+                <div class="search-container">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="Search Arabic words or meanings..." id="searchInput">
+                </div>
+                <div class="word-grid" id="wordGrid">
+                    <div class="word-item">الله</div>
+                    <div class="word-item">رحمن</div>
+                    <div class="word-item">رحيم</div>
+                    <div class="word-item">ملك</div>
+                    <div class="word-item">يوم</div>
+                    <div class="word-item">دين</div>
+                    <div class="word-item">إياك</div>
+                    <div class="word-item">نعبد</div>
+                    <div class="word-item">نستعين</div>
+                    <div class="word-item">اهدنا</div>
+                    <div class="word-item">صراط</div>
+                    <div class="word-item">مستقيم</div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>📊 Your Progress</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-number">247</span>
+                        <span class="stat-label">Words Learned</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">15</span>
+                        <span class="stat-label">Days Streak</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">89%</span>
+                        <span class="stat-label">Accuracy</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">12</span>
+                        <span class="stat-label">Surahs</span>
+                    </div>
+                </div>
+                <div class="progress-section">
+                    <h3>Overall Progress</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                    <div class="progress-text">247 of 380 words mastered</div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>🎯 Quick Actions</h2>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="startQuiz()">Start Quiz</button>
+                    <button class="btn btn-secondary" onclick="reviewWords()">Review Words</button>
+                    <button class="btn btn-secondary" onclick="addWord()">Add New Word</button>
+                    <button class="btn btn-primary" onclick="practiceMode()">Practice Mode</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Simple search functionality
+        const searchInput = document.getElementById('searchInput');
+        const wordGrid = document.getElementById('wordGrid');
+        const originalWords = Array.from(wordGrid.children);
+
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            originalWords.forEach(word => {
+                const wordText = word.textContent.toLowerCase();
+                if (wordText.includes(searchTerm) || searchTerm === '') {
+                    word.style.display = 'flex';
+                } else {
+                    word.style.display = 'none';
+                }
+            });
+        });
+
+        // Word click handler
+        document.querySelectorAll('.word-item').forEach(word => {
+            word.addEventListener('click', function() {
+                // Add a subtle animation
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+                
+                // Here you could add functionality to show word details
+                console.log('Word clicked:', this.textContent);
+            });
+        });
+
+        // Button handlers
+        function startQuiz() {
+            alert('Starting quiz mode...');
+        }
+
+        function reviewWords() {
+            alert('Opening review mode...');
+        }
+
+        function addWord() {
+            alert('Add new word feature...');
+        }
+
+        function practiceMode() {
+            alert('Starting practice mode...');
+        }
+
+        // Add touch feedback for mobile
+        if ('ontouchstart' in window) {
+            document.querySelectorAll('.btn, .word-item').forEach(element => {
+                element.addEventListener('touchstart', function() {
+                    this.style.opacity = '0.8';
+                });
+                
+                element.addEventListener('touchend', function() {
+                    this.style.opacity = '1';
+                });
+            });
+        }
+    </script>
+</body>
+</html>
