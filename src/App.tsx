@@ -6,6 +6,7 @@ import { QuickActions } from './components/QuickActions'
 import { AuthModal } from './components/AuthModal'
 import { QuizModal } from './components/QuizModal'
 import { AddWordModal } from './components/AddWordModal'
+import { WordDetailModal } from './components/WordDetailModal'
 import { useAuth } from './hooks/useAuth'
 import { useWords } from './hooks/useWords'
 import { useUserProgress } from './hooks/useUserProgress'
@@ -19,10 +20,12 @@ function App() {
   const [authModalOpen, setAuthModalOpen] = useState(false)
   const [quizModalOpen, setQuizModalOpen] = useState(false)
   const [addWordModalOpen, setAddWordModalOpen] = useState(false)
+  const [wordDetailModalOpen, setWordDetailModalOpen] = useState(false)
+  const [selectedWord, setSelectedWord] = useState<any>(null)
 
   const handleWordClick = (word: any) => {
-    console.log('Word clicked:', word)
-    // TODO: Navigate to word detail view or start learning session
+    setSelectedWord(word)
+    setWordDetailModalOpen(true)
   }
 
   const handleSmartLearning = () => {
@@ -195,6 +198,14 @@ function App() {
       <AddWordModal 
         isOpen={addWordModalOpen} 
         onClose={() => setAddWordModalOpen(false)} 
+      />
+      <WordDetailModal 
+        isOpen={wordDetailModalOpen} 
+        onClose={() => {
+          setWordDetailModalOpen(false)
+          setSelectedWord(null)
+        }}
+        word={selectedWord}
       />
     </div>
   )
