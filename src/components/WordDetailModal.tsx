@@ -4,7 +4,7 @@ import { Word, UserProgress } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { useUserProgress } from '../hooks/useUserProgress'
 import { useQuranVerse } from '../hooks/useQuranVerse'
-import { getWordType } from '../hooks/wordCategories'
+import { getWordType } from '../hooks/word_categories'
 
 interface WordDetailModalProps {
   isOpen: boolean
