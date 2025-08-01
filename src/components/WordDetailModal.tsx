@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
-import { X, Volume2, Star, BookOpen, Clock, TrendingUp } from 'lucide-react'
+import { X, Volume2, Star, BookOpen, Clock, TrendingUp, Search, Loader2 } from 'lucide-react'
 import { Word, UserProgress } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { useUserProgress } from '../hooks/useUserProgress'
+import { useQuranVerse } from '../hooks/useQuranVerse'
 
 interface WordDetailModalProps {
   isOpen: boolean
@@ -17,10 +18,18 @@ export const WordDetailModal: React.FC<WordDetailModalProps> = ({
 }) => {
   const { user } = useAuth()
   const { getWordProgress, updateProgress } = useUserProgress()
+  const { verseData, verseLoading, verseError, fetchVerse, clearVerse, isUsingSimulatedData } = useQuranVerse()
   const [isPlaying, setIsPlaying] = useState(false)
   const [showQuiz, setShowQuiz] = useState(false)
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
   const [quizResult, setQuizResult] = useState<boolean | null>(null)
+
+  // Clear verse data when modal opens/closes
+  React.useEffect(() => {
+    if (!isOpen) {
+      clearVerse()
+    }
+  }, [isOpen, clearVerse])
 
   if (!isOpen || !word) return null
 
@@ -194,6 +203,89 @@ export const WordDetailModal: React.FC<WordDetailModalProps> = ({
                 To your vocabulary
               </div>
             </div>
+          </div>
+
+          {/* Verse Context Section */}
+          <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-lg p-4">
+            <h3 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+              <Search className="w-4 h-4" />
+              Find in Quran
+              {isUsingSimulatedData && (
+                <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
+                  Demo Mode
+                </span>
+              )}
+            </h3>
+            
+            {!verseData && !verseLoading && !verseError && (
+              <div>
+                <p className="text-gray-600 text-sm mb-3">
+                  See how this word appears in the Quran with context and translation.
+                </p>
+                <button
+                  onClick={() => fetchVerse(word)}
+                  className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors flex items-center gap-2"
+                >
+                  <Search className="w-4 h-4" />
+                  Show in Verse
+                </button>
+              </div>
+            )}
+
+            {verseLoading && (
+              <div className="flex items-center gap-2 text-indigo-600">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span className="text-sm">Finding verse...</span>
+              </div>
+            )}
+
+            {verseError && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                <p className="text-red-600 text-sm">{verseError}</p>
+                <button
+                  onClick={() => fetchVerse(word)}
+                  className="mt-2 text-red-600 hover:text-red-700 text-sm font-medium"
+                >
+                  Try Again
+                </button>
+              </div>
+            )}
+
+            {verseData && (
+              <div className="space-y-4">
+                <div className="bg-white rounded-lg p-4 border border-indigo-200">
+                  <div className="text-center mb-3">
+                    <div className="text-2xl font-bold text-gray-800 mb-2 leading-relaxed" dir="rtl">
+                      {verseData.arabic}
+                    </div>
+                    <div className="text-gray-600 text-sm italic">
+                      {verseData.english}
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <span className="inline-flex items-center gap-1 bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-xs font-medium">
+                      <BookOpen className="w-3 h-3" />
+                      {verseData.reference}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => fetchVerse(word)}
+                    className="text-indigo-600 hover:text-indigo-700 text-sm font-medium"
+                  >
+                    Find Another
+                  </button>
+                  <button
+                    onClick={clearVerse}
+                    className="text-gray-600 hover:text-gray-700 text-sm font-medium"
+                  >
+                    Clear
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Quick Quiz Section */}
