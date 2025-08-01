@@ -349,7 +349,7 @@ export const useQuranVerse = () => {
   const fetchVerse = async (word: Word) => {
     setVerseLoading(true)
     setVerseError(null)
-    setVerseData(null)
+    setContextData(null)
 
     if (USE_SIMULATED_DATA) {
       // Simulated data with network delay
@@ -357,7 +357,7 @@ export const useQuranVerse = () => {
         try {
           const verse = fallbackVerses[word.arabic]
           if (verse) {
-            setVerseData(verse)
+            setContextData(verse)
           } else {
             setVerseError(`No verse found for "${word.arabic}". This is simulated data with limited examples.`)
           }
