@@ -1,4 +1,5 @@
 import React from 'react'
+import { useAuth } from '../hooks/useAuth'
 import { 
   Brain, 
   BookOpen, 
@@ -19,6 +20,7 @@ interface QuickActionsProps {
 
 export const QuickActions: React.FC<QuickActionsProps> = ({
   onStartQuiz,
+  const { user } = useAuth()
   onReviewWords,
   onAddWord,
   onPracticeMode,
@@ -31,11 +33,13 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
     description: string
     onClick?: () => void
     variant?: 'primary' | 'secondary'
-  }> = ({ icon, title, description, onClick, variant = 'secondary' }) => (
+    requiresAuth?: boolean
+  }> = ({ icon, title, description, onClick, variant = 'secondary', requiresAuth = false }) => (
     <button
       onClick={onClick}
       type="button"
-      className={`p-4 rounded-lg text-left transition-all duration-300 hover:scale-105 ${
+      className={`p-4 rounded-lg text-left transition-all duration-300 hover:scale-105 relative ${
+        requiresAuth && !user ? 'opacity-75' : ''
         variant === 'primary'
           ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg hover:shadow-xl'
           : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200'
@@ -46,8 +50,18 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
         <span className="font-semibold">{title}</span>
       </div>
       <p className={`text-sm ${variant === 'primary' ? 'text-white/90' : 'text-gray-600'}`}>
+        {requiresAuth && !user && (
+          <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full mb-1 inline-block">
+            Login Required
+          </span>
+        )}
         {description}
       </p>
+      {requiresAuth && !user && (
+        <div className="absolute inset-0 bg-gray-100 bg-opacity-50 rounded-lg flex items-center justify-center">
+          <span className="text-xs font-medium text-gray-600">🔒</span>
+        </div>
+      )}
     </button>
   )
 
@@ -62,7 +76,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
         <ActionButton
           icon={<Brain className="w-5 h-5" />}
           title="Smart Learning"
-          description="AI-adaptive learning session"
+          description={user ? "AI-adaptive learning session" : "Try lesson 1 - no signup needed!"}
           onClick={onSmartLearning}
           variant="primary"
         />
@@ -70,7 +84,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
         <ActionButton
           icon={<Trophy className="w-5 h-5" />}
           title="Quiz Mode"
-          description="Test your knowledge"
+          description={user ? "Test your knowledge" : "Take the lesson 1 quiz!"}
           onClick={onStartQuiz}
           variant="primary"
         />
@@ -78,7 +92,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
         <ActionButton
           icon={<BookOpen className="w-5 h-5" />}
           title="Flashcards"
-          description="Review at your own pace"
+          description={user ? "Review at your own pace" : "Try flashcards for lesson 1"}
           onClick={onFlashcards}
         />
         
@@ -86,13 +100,14 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
           icon={<RotateCcw className="w-5 h-5" />}
           title="Review Words"
           description="Spaced repetition review"
+          requiresAuth={true}
           onClick={onReviewWords}
         />
         
         <ActionButton
           icon={<Play className="w-5 h-5" />}
           title="Practice Mode"
-          description="Interactive practice session"
+          description={user ? "Interactive practice session" : "Try basic practice mode"}
           onClick={onPracticeMode}
         />
         
@@ -100,6 +115,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
           icon={<Plus className="w-5 h-5" />}
           title="Add Word"
           description="Expand your vocabulary"
+          requiresAuth={true}
           onClick={onAddWord}
         />
       </div>

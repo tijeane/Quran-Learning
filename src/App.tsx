@@ -26,19 +26,11 @@ function App() {
   }
 
   const handleSmartLearning = () => {
-    if (!user) {
-      setAuthModalOpen(true)
-      return
-    }
     console.log('Starting smart learning session...')
     // TODO: Implement adaptive learning algorithm
   }
 
   const handleQuiz = () => {
-    if (!user) {
-      setAuthModalOpen(true)
-      return
-    }
     if (words.length === 0) {
       alert('No words available for quiz. Please add some words first.')
       return
@@ -47,10 +39,6 @@ function App() {
   }
 
   const handleFlashcards = () => {
-    if (!user) {
-      setAuthModalOpen(true)
-      return
-    }
     console.log('Starting flashcard review...')
     // TODO: Navigate to flashcard interface
   }
@@ -65,10 +53,6 @@ function App() {
   }
 
   const handlePracticeMode = () => {
-    if (!user) {
-      setAuthModalOpen(true)
-      return
-    }
     console.log('Starting practice mode...')
     // TODO: Navigate to practice interface
   }

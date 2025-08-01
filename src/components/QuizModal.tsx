@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { X, CheckCircle, XCircle, RotateCcw } from 'lucide-react'
 import { Word } from '../lib/supabase'
+import { useAuth } from '../hooks/useAuth'
 import { useUserProgress } from '../hooks/useUserProgress'
 
 interface QuizModalProps {
@@ -17,6 +18,7 @@ interface QuizQuestion {
 
 export const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, words }) => {
   const [questions, setQuestions] = useState<QuizQuestion[]>([])
+  const { user } = useAuth()
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
   const [showResult, setShowResult] = useState(false)
@@ -32,8 +34,12 @@ export const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, words }) 
   }, [isOpen, words])
 
   const generateQuiz = () => {
-    // Select 10 random words for the quiz
-    const shuffledWords = [...words].sort(() => Math.random() - 0.5).slice(0, 10)
+    // For anonymous users, use first 10 words (lesson 1)
+    // For logged-in users, use random selection
+    const quizWords = user 
+      ? [...words].sort(() => Math.random() - 0.5).slice(0, 10)
+      : words.slice(0, Math.min(10, words.length))
+    
     
     const quizQuestions: QuizQuestion[] = shuffledWords.map(word => {
       // Get 3 random wrong answers
@@ -77,7 +83,9 @@ export const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, words }) 
     }
 
     // Update progress in database
-    await updateProgress(questions[currentQuestion].word.id, isCorrect)
+    if (user) {
+      await updateProgress(questions[currentQuestion].word.id, isCorrect)
+    }
 
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1)
@@ -156,17 +164,38 @@ export const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, words }) 
               </div>
             </div>
             
+            {!user && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <p className="text-blue-800 text-sm text-center">
+                  🎉 Great job completing Lesson 1! 
+                  <br />
+                  <strong>Sign up to track your progress and unlock more lessons!</strong>
+                </p>
+              </div>
+            )}
+            
             <div className="flex gap-3">
+              {!user && (
+                <button
+                  onClick={() => {
+                    handleClose()
+                    // You can trigger auth modal here if needed
+                  }}
+                  className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                >
+                  Sign Up to Continue
+                </button>
+              )}
               <button
                 onClick={handleRestart}
-                className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                className={`${!user ? 'flex-1' : 'flex-1'} bg-gray-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-gray-700 transition-colors flex items-center justify-center gap-2`}
               >
                 <RotateCcw className="w-4 h-4" />
                 Try Again
               </button>
               <button
                 onClick={handleClose}
-                className="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
+                className={`${!user ? 'flex-1' : 'flex-1'} bg-gray-200 text-gray-800 py-2 px-4 rounded-lg font-semibold hover:bg-gray-300 transition-colors`}
               >
                 Close
               </button>

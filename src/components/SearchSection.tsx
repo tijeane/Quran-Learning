@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react'
 import { Search, Filter, ChevronDown, ChevronUp } from 'lucide-react'
+import { useAuth } from '../hooks/useAuth'
 import { WordCard } from './WordCard'
 import type { Word, UserProgress } from '../lib/supabase'
 
@@ -12,6 +13,7 @@ interface SearchSectionProps {
 export const SearchSection: React.FC<SearchSectionProps> = ({ 
   words, 
   onWordClick,
+  const { user } = useAuth()
   getWordProgress
 }) => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -19,8 +21,11 @@ export const SearchSection: React.FC<SearchSectionProps> = ({
   const [showAll, setShowAll] = useState(false)
   const [wordsPerPage] = useState(12) // Show 12 words initially
 
+  // For anonymous users, limit to first 20 words (lesson 1 + preview)
+  const availableWords = user ? words : words.slice(0, 20)
+
   const filteredWords = useMemo(() => {
-    return words.filter(word => {
+    return availableWords.filter(word => {
       const matchesSearch = 
         word.arabic.includes(searchTerm) ||
         word.transliteration.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -37,7 +42,7 @@ export const SearchSection: React.FC<SearchSectionProps> = ({
       
       return matchesSearch && matchesFilter
     })
-  }, [words, searchTerm, filterBy])
+  }, [availableWords, searchTerm, filterBy, getWordProgress])
 
   const displayedWords = showAll ? filteredWords : filteredWords.slice(0, wordsPerPage)
   const hasMoreWords = filteredWords.length > wordsPerPage
@@ -48,6 +53,15 @@ export const SearchSection: React.FC<SearchSectionProps> = ({
         <Search className="w-5 h-5 text-blue-600" />
         Search Words
       </h2>
+      
+      {!user && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+          <p className="text-amber-800 text-sm">
+            📚 <strong>Lesson 1 Preview:</strong> You're viewing the first 20 most common Quranic words. 
+            Sign up to access all 100+ words and track your progress!
+          </p>
+        </div>
+      )}
       
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <div className="relative flex-1">
