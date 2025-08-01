@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Word } from '../lib/supabase'
+import { getWordType, getFunctionWordPhrases, WordPhrase } from './wordCategories'
 
 // Toggle this flag to switch between simulated data and real API calls
 const USE_SIMULATED_DATA = false
@@ -12,6 +13,13 @@ export interface VerseData {
   ayahNumber?: number
   audioUrl?: string
 }
+
+export interface PhraseData {
+  phrases: WordPhrase[]
+  wordType: 'function'
+}
+
+export type ContextData = VerseData | PhraseData
 
 interface SearchResult {
   count: number
@@ -309,9 +317,13 @@ const fallbackVerses: Record<string, VerseData> = {
 }
 
 export const useQuranVerse = () => {
-  const [verseData, setVerseData] = useState<VerseData | null>(null)
+  const [contextData, setContextData] = useState<ContextData | null>(null)
   const [verseLoading, setVerseLoading] = useState(false)
   const [verseError, setVerseError] = useState<string | null>(null)
+
+  // Legacy getters for backward compatibility
+  const verseData = contextData && 'arabic' in contextData ? contextData : null
+  const phraseData = contextData && 'phrases' in contextData ? contextData : null
 
   // Helper function to make API requests with timeout and retry
   const makeApiRequest = async (url: string, timeout = 5000): Promise<Response> => {
@@ -362,7 +374,7 @@ export const useQuranVerse = () => {
     const fallbackVerse = fallbackVerses[word.arabic]
     if (fallbackVerse) {
       console.log('📚 Using fallback verse data for:', word.arabic)
-      setVerseData(fallbackVerse)
+      setContextData(fallbackVerse)
       setVerseLoading(false)
       return
     }
@@ -492,7 +504,7 @@ export const useQuranVerse = () => {
       }
 
       console.log('✅ Final verse data:', verseData)
-      setVerseData(verseData)
+      setContextData(verseData)
       
     } catch (err) {
       console.error('❌ Error fetching verse:', err)
@@ -504,7 +516,7 @@ export const useQuranVerse = () => {
       
       if (similarWord) {
         console.log('📚 Using similar fallback verse for:', similarWord)
-        setVerseData(fallbackVerses[similarWord])
+        setContextData(fallbackVerses[similarWord])
       } else {
         setVerseError(
           `Unable to fetch verse data. The API might be temporarily unavailable. Please try again later.`
@@ -517,13 +529,15 @@ export const useQuranVerse = () => {
   }
 
   const clearVerse = () => {
-    setVerseData(null)
+    setContextData(null)
     setVerseError(null)
     setVerseLoading(false)
   }
 
   return {
-    verseData,
+    contextData,
+    verseData, // Legacy compatibility
+    phraseData, // New phrase data
     verseLoading,
     verseError,
     fetchVerse,
