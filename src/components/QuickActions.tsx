@@ -20,13 +20,14 @@ interface QuickActionsProps {
 
 export const QuickActions: React.FC<QuickActionsProps> = ({
   onStartQuiz,
-  const { user } = useAuth()
   onReviewWords,
   onAddWord,
   onPracticeMode,
   onSmartLearning,
   onFlashcards
 }) => {
+  const { user } = useAuth()
+
   const ActionButton: React.FC<{
     icon: React.ReactNode
     title: string

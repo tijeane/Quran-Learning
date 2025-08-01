@@ -13,9 +13,10 @@ interface SearchSectionProps {
 export const SearchSection: React.FC<SearchSectionProps> = ({ 
   words, 
   onWordClick,
-  const { user } = useAuth()
   getWordProgress
 }) => {
+  const { user } = useAuth()
+
   const [searchTerm, setSearchTerm] = useState('')
   const [filterBy, setFilterBy] = useState<'all' | 'mastered' | 'learning'>('all')
   const [showAll, setShowAll] = useState(false)
