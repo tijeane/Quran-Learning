@@ -7,30 +7,41 @@ export interface WordPhrase {
   transliteration: string
   english: string
   context?: string // Optional context about when this phrase is used
+  category?: 'temporal' | 'spatial' | 'theological' | 'grammatical' | 'conditional' | 'possessive' | 'relational' // Grammatical categorization
+  audioUrl?: string // Optional audio URL for pronunciation
 }
 
 // Function words that should show phrases instead of verses
 export const functionWords = new Set([
   // Articles and particles
-  'ال', 'و', 'ب', 'ل', 'ف', 'ك',
+  'ال', 'و', 'ب', 'ل', 'ف', 'ك', 'س', 'ت',
   
   // Prepositions
-  'في', 'من', 'إلى', 'على', 'عن', 'مع', 'عند', 'بين', 'بعد', 'قبل', 'تحت', 'فوق',
+  'في', 'من', 'إلى', 'على', 'عن', 'مع', 'عند', 'بين', 'بعد', 'قبل', 'تحت', 'فوق', 'أمام', 'وراء', 'حول', 'خلال', 'ضد', 'نحو', 'دون', 'سوى', 'غير',
   
   // Common particles and connectors
-  'ما', 'لا', 'إن', 'أن', 'كان', 'كانوا', 'كانت', 'لم', 'لن', 'قد', 'قال', 'كل',
+  'ما', 'لا', 'إن', 'أن', 'كان', 'كانوا', 'كانت', 'لم', 'لن', 'قد', 'قال', 'كل', 'بعض', 'غير', 'سوف', 'لقد', 'لكن', 'أم', 'أو', 'بل', 'لعل', 'عسى', 'ليت', 'كأن', 'إذا', 'إذ', 'لو', 'لولا', 'حتى', 'كي', 'لكي',
   
   // Pronouns and possessive pronouns
-  'هو', 'هي', 'هم', 'هن', 'أنت', 'أنتم', 'أنا', 'نحن', 'لهم', 'لها', 'له', 'لك', 'لكم', 'لنا', 'بهم', 'بها', 'به', 'بك', 'فيهم', 'فيها', 'فيه', 'عليهم', 'عليها', 'عليه', 'عنهم', 'عنها', 'عنه',
+  'هو', 'هي', 'هم', 'هن', 'أنت', 'أنتم', 'أنتن', 'أنا', 'نحن', 'إياه', 'إياها', 'إياهم', 'إياهن', 'إياك', 'إياكم', 'إياكن', 'إياي', 'إيانا',
+  
+  // Possessive and prepositional pronouns
+  'لهم', 'لها', 'له', 'لك', 'لكم', 'لكن', 'لنا', 'لي', 'بهم', 'بها', 'به', 'بك', 'بكم', 'بكن', 'بنا', 'بي', 'فيهم', 'فيها', 'فيه', 'فيك', 'فيكم', 'فيكن', 'فينا', 'في', 'عليهم', 'عليها', 'عليه', 'عليك', 'عليكم', 'عليكن', 'علينا', 'علي', 'عنهم', 'عنها', 'عنه', 'عنك', 'عنكم', 'عنكن', 'عنا', 'عني', 'منهم', 'منها', 'منه', 'منك', 'منكم', 'منكن', 'منا', 'مني',
   
   // Relative pronouns
-  'الذي', 'الذين', 'التي', 'اللتان', 'اللتين', 'اللاتي',
+  'الذي', 'الذين', 'التي', 'اللتان', 'اللتين', 'اللواتي', 'اللاتي', 'اللائي',
   
   // Demonstratives
-  'هذا', 'هذه', 'ذلك', 'تلك', 'أولئك',
+  'هذا', 'هذه', 'هؤلاء', 'ذلك', 'تلك', 'أولئك', 'ذان', 'تان', 'هنا', 'هناك', 'هنالك',
   
-  // Question words
-  'ماذا', 'من', 'أين', 'كيف', 'متى', 'لماذا'
+  // Question words and interrogatives
+  'ماذا', 'من', 'أين', 'كيف', 'متى', 'لماذا', 'لم', 'أي', 'أين', 'أنى', 'كم', 'كيف', 'متى', 'أيان',
+  
+  // Conditional and temporal particles
+  'إذا', 'إذ', 'لما', 'كلما', 'بينما', 'لكن', 'غير', 'سوى', 'إلا', 'سوف', 'قد', 'لقد',
+  
+  // Negation particles
+  'لا', 'لم', 'لن', 'ما', 'غير', 'ليس', 'لات', 'لا'
 ])
 
 // Phrase collections for function words
@@ -40,31 +51,50 @@ export const functionWordPhrases: Record<string, WordPhrase[]> = {
       arabic: 'من الله',
       transliteration: 'min Allah',
       english: 'from Allah',
-      context: 'Divine origin or source'
+      context: 'Divine origin or source',
+      category: 'theological'
     },
     {
       arabic: 'من قبل',
       transliteration: 'min qabl',
       english: 'from before / previously',
-      context: 'Temporal reference'
+      context: 'Temporal reference',
+      category: 'temporal'
     },
     {
       arabic: 'من ربكم',
       transliteration: 'min rabbikum',
       english: 'from your Lord',
-      context: 'Divine guidance or command'
+      context: 'Divine guidance or command',
+      category: 'theological'
     },
     {
       arabic: 'من كل شيء',
       transliteration: 'min kulli shay\'',
       english: 'from everything',
-      context: 'Comprehensive scope'
+      context: 'Comprehensive scope',
+      category: 'spatial'
     },
     {
       arabic: 'من دون الله',
       transliteration: 'min duni Allah',
       english: 'besides Allah',
-      context: 'Exclusivity of worship'
+      context: 'Exclusivity of worship',
+      category: 'theological'
+    },
+    {
+      arabic: 'من بعد',
+      transliteration: 'min ba\'d',
+      english: 'after / following',
+      context: 'Sequential time reference',
+      category: 'temporal'
+    },
+    {
+      arabic: 'من أجل',
+      transliteration: 'min ajl',
+      english: 'for the sake of',
+      context: 'Purpose or cause',
+      category: 'relational'
     }
   ],
   
@@ -370,31 +400,109 @@ export const functionWordPhrases: Record<string, WordPhrase[]> = {
       arabic: 'لهم جنات',
       transliteration: 'lahum jannat',
       english: 'for them are gardens',
-      context: 'Promise of Paradise for believers'
+      context: 'Promise of Paradise for believers',
+      category: 'theological'
     },
     {
       arabic: 'لهم أجر عظيم',
       transliteration: 'lahum ajrun \'azim',
       english: 'for them is a great reward',
-      context: 'Divine reward for good deeds'
+      context: 'Divine reward for good deeds',
+      category: 'theological'
     },
     {
       arabic: 'لهم ما يشاءون',
       transliteration: 'lahum ma yasha\'un',
       english: 'for them is whatever they wish',
-      context: 'Abundance in Paradise'
+      context: 'Abundance in Paradise',
+      category: 'theological'
     },
     {
       arabic: 'لهم البشرى',
       transliteration: 'lahum al-bushra',
       english: 'for them is good news',
-      context: 'Glad tidings for the righteous'
+      context: 'Glad tidings for the righteous',
+      category: 'theological'
     },
     {
       arabic: 'لهم عذاب أليم',
       transliteration: 'lahum \'adhabun alim',
       english: 'for them is a painful punishment',
-      context: 'Warning for wrongdoers'
+      context: 'Warning for wrongdoers',
+      category: 'theological'
+    }
+  ],
+  
+  // Add some more common function words with categorized phrases
+  'إذا': [
+    {
+      arabic: 'إذا جاء نصر الله',
+      transliteration: 'idha ja\'a nasru Allah',
+      english: 'when the help of Allah comes',
+      context: 'Conditional statement about divine help',
+      category: 'conditional'
+    },
+    {
+      arabic: 'إذا قرئ القرآن',
+      transliteration: 'idha quri\'a al-qur\'an',
+      english: 'when the Quran is recited',
+      context: 'Proper etiquette during recitation',
+      category: 'conditional'
+    },
+    {
+      arabic: 'إذا دعاك',
+      transliteration: 'idha da\'ak',
+      english: 'when He calls you',
+      context: 'Response to divine call',
+      category: 'conditional'
+    }
+  ],
+  
+  'بل': [
+    {
+      arabic: 'بل الله',
+      transliteration: 'bal Allah',
+      english: 'rather, Allah',
+      context: 'Correction emphasizing Allah\'s role',
+      category: 'grammatical'
+    },
+    {
+      arabic: 'بل أنتم',
+      transliteration: 'bal antum',
+      english: 'rather, you',
+      context: 'Contradiction or emphasis',
+      category: 'grammatical'
+    },
+    {
+      arabic: 'بل هو الحق',
+      transliteration: 'bal huwa al-haqq',
+      english: 'rather, it is the truth',
+      context: 'Affirming the truth',
+      category: 'grammatical'
+    }
+  ],
+  
+  'حتى': [
+    {
+      arabic: 'حتى يأتيهم',
+      transliteration: 'hatta ya\'tiyahum',
+      english: 'until it comes to them',
+      context: 'Temporal endpoint',
+      category: 'temporal'
+    },
+    {
+      arabic: 'حتى الموت',
+      transliteration: 'hatta al-mawt',
+      english: 'until death',
+      context: 'Ultimate temporal boundary',
+      category: 'temporal'
+    },
+    {
+      arabic: 'حتى تؤمنوا',
+      transliteration: 'hatta tu\'minu',
+      english: 'until you believe',
+      context: 'Condition for change',
+      category: 'conditional'
     }
   ],
   
