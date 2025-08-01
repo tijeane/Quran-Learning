@@ -41,6 +41,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
       type="button"
       className={`p-4 rounded-lg text-left transition-all duration-300 hover:scale-105 relative ${
         requiresAuth && !user ? 'opacity-75' : ''
+      } ${
         variant === 'primary'
           ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg hover:shadow-xl'
           : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200'
