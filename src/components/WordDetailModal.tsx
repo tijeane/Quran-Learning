@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { X, Volume2, Star, BookOpen, Clock, TrendingUp, Search, Loader2 } from 'lucide-react'
+import { X, Volume2, Star, BookOpen, Clock, TrendingUp, Search, Loader2, Play } from 'lucide-react'
 import { Word, UserProgress } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { useUserProgress } from '../hooks/useUserProgress'
@@ -20,6 +20,7 @@ export const WordDetailModal: React.FC<WordDetailModalProps> = ({
   const { getWordProgress, updateProgress } = useUserProgress()
   const { verseData, verseLoading, verseError, fetchVerse, clearVerse, isUsingSimulatedData } = useQuranVerse()
   const [isPlaying, setIsPlaying] = useState(false)
+  const [isPlayingVerse, setIsPlayingVerse] = useState(false)
   const [showQuiz, setShowQuiz] = useState(false)
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
   const [quizResult, setQuizResult] = useState<boolean | null>(null)
@@ -39,18 +40,32 @@ export const WordDetailModal: React.FC<WordDetailModalProps> = ({
   const playAudio = () => {
     setIsPlaying(true)
     
-    if (word.audio_url) {
+    // Prioritize word.audio_url from database, fallback to text-to-speech
+    if (word.audio_url && word.audio_url.trim() !== '') {
       const audio = new Audio(word.audio_url)
       audio.onended = () => setIsPlaying(false)
       audio.onerror = () => {
         setIsPlaying(false)
-        // Fallback to text-to-speech
+        // Fallback to text-to-speech if audio URL fails
         playTextToSpeech()
       }
       audio.play()
     } else {
       playTextToSpeech()
     }
+  }
+
+  const playVerseAudio = () => {
+    if (!verseData?.audioUrl) return
+    
+    setIsPlayingVerse(true)
+    const audio = new Audio(verseData.audioUrl)
+    audio.onended = () => setIsPlayingVerse(false)
+    audio.onerror = () => {
+      setIsPlayingVerse(false)
+      console.error('Failed to play verse audio')
+    }
+    audio.play()
   }
 
   const playTextToSpeech = () => {
@@ -254,6 +269,30 @@ export const WordDetailModal: React.FC<WordDetailModalProps> = ({
             {verseData && (
               <div className="space-y-4">
                 <div className="bg-white rounded-lg p-4 border border-indigo-200">
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="inline-flex items-center gap-1 bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-xs font-medium">
+                      <BookOpen className="w-3 h-3" />
+                      {verseData.reference}
+                    </span>
+                    {verseData.audioUrl && (
+                      <button
+                        onClick={playVerseAudio}
+                        disabled={isPlayingVerse}
+                        className={`p-2 rounded-full transition-colors ${
+                          isPlayingVerse 
+                            ? 'bg-indigo-100 text-indigo-600' 
+                            : 'hover:bg-indigo-100 text-indigo-600'
+                        }`}
+                        title="Play verse audio"
+                      >
+                        {isPlayingVerse ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Play className="w-4 h-4" />
+                        )}
+                      </button>
+                    )}
+                  </div>
                   <div className="text-center mb-3">
                     <div className="text-2xl font-bold text-gray-800 mb-2 leading-relaxed" dir="rtl">
                       {verseData.arabic}
@@ -261,12 +300,6 @@ export const WordDetailModal: React.FC<WordDetailModalProps> = ({
                     <div className="text-gray-600 text-sm italic">
                       {verseData.english}
                     </div>
-                  </div>
-                  <div className="text-center">
-                    <span className="inline-flex items-center gap-1 bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-xs font-medium">
-                      <BookOpen className="w-3 h-3" />
-                      {verseData.reference}
-                    </span>
                   </div>
                 </div>
                 
@@ -283,6 +316,16 @@ export const WordDetailModal: React.FC<WordDetailModalProps> = ({
                   >
                     Clear
                   </button>
+                  {verseData.audioUrl && (
+                    <button
+                      onClick={playVerseAudio}
+                      disabled={isPlayingVerse}
+                      className="text-indigo-600 hover:text-indigo-700 text-sm font-medium flex items-center gap-1"
+                    >
+                      <Volume2 className="w-3 h-3" />
+                      {isPlayingVerse ? 'Playing...' : 'Play Audio'}
+                    </button>
+                  )}
                 </div>
               </div>
             )}
@@ -349,9 +392,10 @@ export const WordDetailModal: React.FC<WordDetailModalProps> = ({
             <button
               onClick={playAudio}
               disabled={isPlaying}
-              className="bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              className="bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2"
             >
-              Practice Pronunciation
+              <Volume2 className="w-4 h-4" />
+              {isPlaying ? 'Playing Word...' : 'Practice Word'}
             </button>
           </div>
         </div>

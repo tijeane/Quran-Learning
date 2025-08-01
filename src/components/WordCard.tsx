@@ -19,7 +19,22 @@ export const WordCard: React.FC<WordCardProps> = ({
     e.stopPropagation()
     setIsPlaying(true)
     
-    // Use text-to-speech as fallback
+    // Prioritize word.audio_url from database, fallback to text-to-speech
+    if (word.audio_url && word.audio_url.trim() !== '') {
+      const audio = new Audio(word.audio_url)
+      audio.onended = () => setIsPlaying(false)
+      audio.onerror = () => {
+        setIsPlaying(false)
+        // Fallback to text-to-speech if audio URL fails
+        playTextToSpeech()
+      }
+      audio.play()
+    } else {
+      playTextToSpeech()
+    }
+  }
+
+  const playTextToSpeech = () => {
     if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(word.arabic)
       utterance.lang = 'ar-SA'
