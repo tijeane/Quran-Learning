@@ -1,16 +1,18 @@
 import React, { useState, useMemo } from 'react'
 import { Search, Filter } from 'lucide-react'
 import { WordCard } from './WordCard'
-import type { Word } from '../lib/supabase'
+import type { Word, UserProgress } from '../lib/supabase'
 
 interface SearchSectionProps {
   words: Word[]
   onWordClick?: (word: Word) => void
+  getWordProgress?: (wordId: number) => UserProgress | undefined
 }
 
 export const SearchSection: React.FC<SearchSectionProps> = ({ 
   words, 
-  onWordClick 
+  onWordClick,
+  getWordProgress
 }) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterBy, setFilterBy] = useState<'all' | 'mastered' | 'learning'>('all')
@@ -22,8 +24,9 @@ export const SearchSection: React.FC<SearchSectionProps> = ({
         word.transliteration.toLowerCase().includes(searchTerm.toLowerCase()) ||
         word.english.toLowerCase().includes(searchTerm.toLowerCase())
       
-      // For now, we'll use mock mastery levels
-      const masteryLevel = Math.floor(Math.random() * 100)
+      // Get actual mastery level from user progress
+      const progress = getWordProgress?.(word.id)
+      const masteryLevel = progress?.mastery_level || 0
       
       const matchesFilter = 
         filterBy === 'all' ||
@@ -72,7 +75,7 @@ export const SearchSection: React.FC<SearchSectionProps> = ({
           <WordCard
             key={word.id}
             word={word}
-            masteryLevel={Math.floor(Math.random() * 100)} // Mock data
+            masteryLevel={getWordProgress?.(word.id)?.mastery_level || 0}
             onClick={() => onWordClick?.(word)}
           />
         ))}

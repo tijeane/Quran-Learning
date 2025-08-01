@@ -1,73 +1,99 @@
 import React, { useState, useEffect } from 'react'
-import { BookOpen, Settings, User } from 'lucide-react'
+import { BookOpen, Settings, User, LogOut } from 'lucide-react'
 import { SearchSection } from './components/SearchSection'
 import { ProgressCard } from './components/ProgressCard'
 import { QuickActions } from './components/QuickActions'
-import type { Word, UserStats } from './lib/supabase'
+import { AuthModal } from './components/AuthModal'
+import { QuizModal } from './components/QuizModal'
+import { AddWordModal } from './components/AddWordModal'
+import { useAuth } from './hooks/useAuth'
+import { useWords } from './hooks/useWords'
+import { useUserProgress } from './hooks/useUserProgress'
 import './App.css'
 
-// Mock data - replace with real Supabase data later
-const mockWords: Word[] = [
-  { id: 1, arabic: 'الله', transliteration: 'Allah', english: 'God', frequency: 2697, created_at: '' },
-  { id: 2, arabic: 'الرحمن', transliteration: 'Ar-Rahman', english: 'The Merciful', frequency: 169, created_at: '' },
-  { id: 3, arabic: 'الرحيم', transliteration: 'Ar-Raheem', english: 'The Compassionate', frequency: 114, created_at: '' },
-  { id: 4, arabic: 'ملك', transliteration: 'Malik', english: 'King', frequency: 48, created_at: '' },
-  { id: 5, arabic: 'يوم', transliteration: 'Yawm', english: 'Day', frequency: 365, created_at: '' },
-  { id: 6, arabic: 'الدين', transliteration: 'Ad-Deen', english: 'The Religion', frequency: 92, created_at: '' },
-  { id: 7, arabic: 'إياك', transliteration: 'Iyyaka', english: 'You alone', frequency: 2, created_at: '' },
-  { id: 8, arabic: 'نعبد', transliteration: 'Na\'budu', english: 'We worship', frequency: 2, created_at: '' },
-  { id: 9, arabic: 'نستعين', transliteration: 'Nasta\'een', english: 'We seek help', frequency: 2, created_at: '' },
-  { id: 10, arabic: 'اهدنا', transliteration: 'Ihdeena', english: 'Guide us', frequency: 2, created_at: '' },
-  { id: 11, arabic: 'الصراط', transliteration: 'As-Sirat', english: 'The path', frequency: 45, created_at: '' },
-  { id: 12, arabic: 'المستقيم', transliteration: 'Al-Mustaqeem', english: 'The straight', frequency: 5, created_at: '' },
-]
-
-const mockStats: UserStats = {
-  words_learned: 47,
-  days_streak: 15,
-  accuracy: 89,
-  surahs_completed: 12,
-  total_points: 2847,
-  current_level: 3
-}
-
 function App() {
-  const [words] = useState<Word[]>(mockWords)
-  const [stats] = useState<UserStats>(mockStats)
+  const { user, loading: authLoading, signOut } = useAuth()
+  const { words, loading: wordsLoading } = useWords()
+  const { stats, loading: progressLoading, getWordProgress } = useUserProgress()
+  
+  const [authModalOpen, setAuthModalOpen] = useState(false)
+  const [quizModalOpen, setQuizModalOpen] = useState(false)
+  const [addWordModalOpen, setAddWordModalOpen] = useState(false)
 
-  const handleWordClick = (word: Word) => {
+  const handleWordClick = (word: any) => {
     console.log('Word clicked:', word)
     // TODO: Navigate to word detail view or start learning session
   }
 
   const handleSmartLearning = () => {
+    if (!user) {
+      setAuthModalOpen(true)
+      return
+    }
     console.log('Starting smart learning session...')
     // TODO: Implement adaptive learning algorithm
   }
 
   const handleQuiz = () => {
-    console.log('Starting quiz mode...')
-    // TODO: Navigate to quiz interface
+    if (!user) {
+      setAuthModalOpen(true)
+      return
+    }
+    if (words.length === 0) {
+      alert('No words available for quiz. Please add some words first.')
+      return
+    }
+    setQuizModalOpen(true)
   }
 
   const handleFlashcards = () => {
+    if (!user) {
+      setAuthModalOpen(true)
+      return
+    }
     console.log('Starting flashcard review...')
     // TODO: Navigate to flashcard interface
   }
 
   const handleReviewWords = () => {
+    if (!user) {
+      setAuthModalOpen(true)
+      return
+    }
     console.log('Starting spaced repetition review...')
     // TODO: Implement spaced repetition logic
   }
 
   const handlePracticeMode = () => {
+    if (!user) {
+      setAuthModalOpen(true)
+      return
+    }
     console.log('Starting practice mode...')
     // TODO: Navigate to practice interface
   }
 
   const handleAddWord = () => {
-    console.log('Adding new word...')
-    // TODO: Open add word modal or form
+    if (!user) {
+      setAuthModalOpen(true)
+      return
+    }
+    setAddWordModalOpen(true)
+  }
+
+  const handleSignOut = async () => {
+    await signOut()
+  }
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -87,11 +113,28 @@ function App() {
             </div>
             
             <div className="flex items-center gap-4">
+              {user ? (
+                <>
+                  <span className="text-sm text-gray-600 hidden sm:block">
+                    Welcome, {user.email}
+                  </span>
+                  <button 
+                    onClick={handleSignOut}
+                    className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <LogOut className="w-5 h-5" />
+                  </button>
+                </>
+              ) : (
+                <button 
+                  onClick={() => setAuthModalOpen(true)}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                >
+                  Sign In
+                </button>
+              )}
               <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
                 <Settings className="w-5 h-5" />
-              </button>
-              <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                <User className="w-5 h-5" />
               </button>
             </div>
           </div>
@@ -100,18 +143,44 @@ function App() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {wordsLoading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading words...</p>
+          </div>
+        ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Search Section - Full width on mobile, spans 2 columns on desktop */}
           <div className="lg:col-span-2">
             <SearchSection 
               words={words} 
               onWordClick={handleWordClick}
+              getWordProgress={getWordProgress}
             />
           </div>
           
           {/* Sidebar */}
           <div className="space-y-8">
-            <ProgressCard stats={stats} />
+            {user && stats && (
+              <ProgressCard stats={stats} />
+            )}
+            {!user && (
+              <div className="bg-white rounded-lg p-6 shadow-md text-center">
+                <User className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  Track Your Progress
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Sign in to save your learning progress and access personalized features.
+                </p>
+                <button
+                  onClick={() => setAuthModalOpen(true)}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                >
+                  Get Started
+                </button>
+              </div>
+            )}
             <QuickActions
               onSmartLearning={handleSmartLearning}
               onStartQuiz={handleQuiz}
@@ -122,7 +191,23 @@ function App() {
             />
           </div>
         </div>
+        )}
       </main>
+
+      {/* Modals */}
+      <AuthModal 
+        isOpen={authModalOpen} 
+        onClose={() => setAuthModalOpen(false)} 
+      />
+      <QuizModal 
+        isOpen={quizModalOpen} 
+        onClose={() => setQuizModalOpen(false)}
+        words={words}
+      />
+      <AddWordModal 
+        isOpen={addWordModalOpen} 
+        onClose={() => setAddWordModalOpen(false)} 
+      />
     </div>
   )
 }
