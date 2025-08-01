@@ -174,7 +174,7 @@ export const useQuranVerse = () => {
           console.log(`🔍 Trying ${strategy.type} search with term:`, strategy.term)
           
           const searchKeyword = encodeURIComponent(strategy.term)
-          const searchUrl = `https://api.alquran.cloud/v1/search/${searchKeyword}/en.sahih`
+          const searchUrl = `https://api.alquran.cloud/v1/search/${searchKeyword}/all/en.sahih`
           
           console.log('📡 Making search API call to:', searchUrl)
           
