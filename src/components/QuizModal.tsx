@@ -41,7 +41,7 @@ export const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, words }) 
       : words.slice(0, Math.min(10, words.length))
     
     
-    const quizQuestions: QuizQuestion[] = shuffledWords.map(word => {
+    const quizQuestions: QuizQuestion[] = quizWords.map(word => {
       // Get 3 random wrong answers
       const wrongAnswers = words
         .filter(w => w.id !== word.id)
