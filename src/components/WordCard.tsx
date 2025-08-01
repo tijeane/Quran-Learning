@@ -25,6 +25,7 @@ export const WordCard: React.FC<WordCardProps> = ({
       utterance.lang = 'ar-SA'
       utterance.rate = 0.8
       utterance.onend = () => setIsPlaying(false)
+      utterance.onerror = () => setIsPlaying(false)
       speechSynthesis.speak(utterance)
     } else {
       setTimeout(() => setIsPlaying(false), 1000)

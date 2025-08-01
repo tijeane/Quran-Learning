@@ -34,6 +34,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
   }> = ({ icon, title, description, onClick, variant = 'secondary' }) => (
     <button
       onClick={onClick}
+      type="button"
       className={`p-4 rounded-lg text-left transition-all duration-300 hover:scale-105 ${
         variant === 'primary'
           ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg hover:shadow-xl'

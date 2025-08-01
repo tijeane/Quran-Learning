@@ -76,7 +76,10 @@ export const SearchSection: React.FC<SearchSectionProps> = ({
             key={word.id}
             word={word}
             masteryLevel={getWordProgress?.(word.id)?.mastery_level || 0}
-            onClick={() => onWordClick?.(word)}
+            onClick={() => {
+              console.log('Word card clicked:', word.arabic)
+              onWordClick?.(word)
+            }}
           />
         ))}
       </div>
